@@ -1,0 +1,9 @@
+{
+    "translations": {
+        "de": {
+            "Username": "Benutzername",
+            "Password": "Passwort",
+            "error on login": "Fehler beim Anmelden"
+        }
+    }
+}

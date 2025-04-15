@@ -1,0 +1,46 @@
+{
+  "elements": [
+    {
+      "name":    "HouseId",
+      "type":    "ValidationTextBox",
+      "caption": "House Id"
+    },
+    {
+      "name":    "SerialNumber",
+      "type":    "ValidationTextBox",
+      "caption": "Serialnumber"
+    },
+    {
+      "name":    "RefreshStateInterval",
+      "type":    "NumberSpinner",
+      "caption": "Refresh State Interval",
+      "suffix":  "seconds",
+      "minimum": 0
+    }
+  ],
+  "actions":  [
+    {
+      "onClick": "AMD_RequestState($id);",
+      "type":    "Button",
+      "caption": "Request state"
+    },
+    {"type": "TestCenter"}
+  ],
+  "status":   [
+    {
+      "code":    201,
+      "icon":    "error",
+      "caption": "Serialnumber not found"
+    },
+    {
+      "code":    202,
+      "icon":    "error",
+      "caption": "House Id not found"
+    },
+    {
+      "code":    207,
+      "icon":    "error",
+      "caption": "Offline todo"
+    }
+  ]
+}

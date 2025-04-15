@@ -1,0 +1,16 @@
+{
+    "id": "{C10C91F4-1843-CBE1-D974-2395A4620106}",
+    "name": "Ambientika Cloud",
+    "type": 1,
+    "vendor": "Ambientika",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [
+        "{9D8BFC8A-9724-0E6E-13FF-711AE4D9179A}"
+    ],
+    "implemented": [
+        "{7E64E639-1446-BFDC-875D-5A4E06C59E26}"
+    ],
+    "prefix": "AMC",
+    "url": ""
+}
