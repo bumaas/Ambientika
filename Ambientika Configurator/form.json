@@ -1,0 +1,42 @@
+{
+    "actions": [
+        {
+            "type": "Configurator",
+            "name": "Devices",
+            "discoveryInterval": 900,
+            "delete": true,
+            "sort": {
+                "column": "cloudName",
+                "direction": "ascending"
+            },
+            "columns": [
+                {
+                    "caption": "House Id",
+                    "name": "houseId",
+                    "width": "150px"
+                },
+                {
+                    "caption": "Serial Number",
+                    "name": "serialNumber",
+                    "width": "150px"
+                },
+                {
+                    "caption": "Model",
+                    "name": "deviceType",
+                    "width": "100px"
+                },
+                {
+                    "caption": "Cloud Name",
+                    "name": "cloudName",
+                    "width": "250"
+                },
+                {
+                    "caption": "Symcon Name",
+                    "name": "symconName",
+                    "width": "auto"
+                }
+            ],
+            "values": []
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "id": "{EF9FC7FE-BB28-0322-A4AC-099FDB5C23C0}",
+    "name": "Ambientika Configurator",
+    "type": 4,
+    "vendor": "Südwind",
+    "aliases": [],
+    "parentRequirements": [
+        "{7E64E639-1446-BFDC-875D-5A4E06C59E26}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{9D8BFC8A-9724-0E6E-13FF-711AE4D9179A}"
+    ],
+    "prefix": "AMC",
+    "url": ""
+}

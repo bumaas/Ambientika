@@ -6,8 +6,10 @@ namespace Ambientika {
 
     class GUID
     {
+        public const string Device     = '{8CF53BBB-FDB2-7850-79D5-42A14A8649B3}';
         public const string CloudIO     = '{C10C91F4-1843-CBE1-D974-2395A4620106}';
         public const string SendToCloud = '{7E64E639-1446-BFDC-875D-5A4E06C59E26}';
+        public const string ReceiveFromCloud = '{5E7A3B89-37B7-2AD8-3DEC-7A30F0DA095F}';
     }
 }
 
@@ -92,11 +94,9 @@ namespace Ambientika\Cloud {
         public const string Server          = 'https://app.ambientika.eu:4521';
         public const string Login           = '/Users/authenticate';
         public const string ChangeMode      = '/device/change-mode';
-        public const string Device_List     = '/v2/home/device_list_page';
         public const string GetDeviceStatus = '/Device/device-status';
-        public const string GetProperties   = '/miotspec/prop/get';
-        public const string SetProperties   = '/miotspec/prop/set';
-        public const string ExecuteAction   = '/miotspec/action';
+        public const string GetHouseDevices   = '/House/house-devices';
+        public const string GetHouses = '/House/houses';
 
         public static function GetApiUrl(string $Path): string
         {

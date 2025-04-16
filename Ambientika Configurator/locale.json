@@ -1,0 +1,16 @@
+{
+    "translations": {
+        "de": {
+            "Show offline devices": "Zeige offline Geräte",
+            "Devices": "Geräte",
+            "IP-Address": "IP-Adresse",
+            "Install Roborock-Modul from Module-Store": "Roborock-Modul aus dem Modul-Store installieren",
+            "Note:\r\n    A Roborock was found which is supported by the Roborock module.\r\n    However, the Roborock module is not installed, so the configurator cannot create a Roborock instance.": "Hinweis:\r\n    Es wurde ein Roborock gefunden, welcher von dem Roborock-Modul unterstützt wird.\r\n    Allerdings ist das Roborock-Modul nicht installiert, somit kann der Konfigurator keine Roborock-Instanz erzeugen.",
+            "Close": "Schließen",
+            "Please wait, installation in progress.\r\nConfigurator will reload automatically": "Bitte warten, die Installation läuft.\r\nDer Konfigurator wird automatisch neu geladen.",
+            "Please wait": "Bitte warten",
+            "Mi Home Devices": "Mi Home Geräte",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
+        }
+    }
+}
