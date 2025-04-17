@@ -101,6 +101,8 @@ class AmbientikaCloud extends IPSModule
         500 => 'Server error'
     ];
 
+    private const int CURL_TIMEOUT_MS = 5000;
+
     public function Create(): void
     {
         //Never delete this line!
@@ -136,7 +138,11 @@ class AmbientikaCloud extends IPSModule
             return;
         }
 
-        $this->UpdateServiceToken();
+        if (($this->ReadPropertyString(\Ambientika\Cloud\Property::Username) !== '') && ($this->ReadPropertyString(\Ambientika\Cloud\Property::Password) !== '' )){
+            $this->updateServiceToken();
+        } else {
+            $this->SetStatus(IS_INACTIVE);
+        }
 
         $this->SetTimerInterval(Timer::RefreshState, 0);
         $this->SetTimerInterval(Timer::Reconnect, 0);
@@ -153,17 +159,17 @@ class AmbientikaCloud extends IPSModule
     private function KernelReady(): void
     {
         $this->UnregisterMessage(0, IPS_KERNELSTARTED);
-        $this->UpdateServiceToken();
+        $this->updateServiceToken();
     }
 
     public function ForwardData($JSONString): string
     {
-        [$Uri, $Params] = ForwardData::FromJson($JSONString);
-        $result = $this->Request($Uri, $Params);
+        ['uri' => $uri, 'params' => $params] = ForwardData::fromJson($JSONString);
+        $result = $this->sendRequest($uri, $params);
         return is_null($result) ? '' : $result;
     }
 
-    private function Request(string $path, string $paramsString): ?string
+    private function sendRequest(string $path, string $paramsString): ?string
     {
         $url = ApiUrl::GetApiUrl($path);
         $this->SendDebug('Request Url', sprintf('url: %s, params: %s', $url, $paramsString), 0);
@@ -176,7 +182,7 @@ class AmbientikaCloud extends IPSModule
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
                 "Authorization: Bearer " . $this->ReadAttributeString(\Ambientika\Cloud\Attribute::ServiceToken)],
-            CURLOPT_TIMEOUT_MS => 5000
+            CURLOPT_TIMEOUT_MS => self::CURL_TIMEOUT_MS
         ];
 
         if ($paramsString !== '') {
@@ -187,31 +193,27 @@ class AmbientikaCloud extends IPSModule
         curl_setopt_array($ch, $options);
 
         $response = curl_exec($ch);
-        $HttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_errno = curl_errno($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_errno($ch);
         curl_close($ch);
-        $this->SendDebug('Response (' . $HttpCode . ')', $response, 0);
+        $this->SendDebug('Response (' . $httpCode . ')', $response, 0);
 
-        switch ($HttpCode) {
-            case 0:
-                $this->SendDebug('CURL ERROR', self::CurlErrorCodes[$curl_errno], 0);
-                return null;
-            case 400:
-            case 401:
-            case 403:
-            case 404:
-            case 405:
-            case 500:
-                $this->SendDebug(self::HttpError[$HttpCode], $HttpCode, 0);
-                return null;
+        if ($httpCode === 0) {
+            $this->SendDebug('CURL Error', self::CurlErrorCodes[$curlError] ?? 'Unknown CURL Error', 0);
+            return null;
+        }
+
+        if (isset(self::HttpError[$httpCode])) {
+            $this->SendDebug('HTTP Error', sprintf('Code: %d, Message: %s', $httpCode, self::HttpError[$httpCode]), 0);
+            return null;
         }
 
         return $response;
     }
 
-    private function UpdateServiceToken(): void
+    private function updateServiceToken(): void
     {
-        $serviceToken = $this->Login();
+        $serviceToken = $this->login();
         $this->WriteAttributeString(\Ambientika\Cloud\Attribute::ServiceToken, $serviceToken);
         $this->SendDebug(__FUNCTION__, 'ServiceToken: ' . $serviceToken, 0);
         if ($serviceToken === '') {
@@ -222,44 +224,53 @@ class AmbientikaCloud extends IPSModule
         $this->SetStatus(IS_ACTIVE);
     }
 
-    private function Login(): string
+    private function login(): string
     {
         $postFields = ApiData::getLoginPayload(
             $this->ReadPropertyString(Property::Username),
             $this->ReadPropertyString(Property::Password)
         );
 
-        $url = ApiUrl::Server . ApiUrl::Login;
+        $url = ApiUrl::GetApiUrl(ApiUrl::Login);
         $this->SendDebug('Cloud Request', $url, 0);
+
+        $ch = $this->initializeCurl($url, $postFields);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $this->SendDebug('Cloud Response (' . $httpCode . ')', $response, 0);
+
+        if ($httpCode !== 200 || !$response) {
+            return '';
+        }
+
+        $responseParts = explode("\r\n\r\n", $response);
+        array_shift($responseParts);
+        $responseBody = implode("\r\n\r\n", $responseParts);
+
+        $this->SendDebug('Cloud Body (' . $httpCode . ')', $responseBody, 0);
+
+        $data = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+
+        return $data['jwtToken'];
+    }
+
+    private function initializeCurl(string $url, array $postFields)
+    {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json", // JSON-Header spezifizieren
-            "Accept: application/json", // Angabe, dass JSON erwartet wird
+            'Content-Type: application/json', // JSON-Header spezifizieren
+            'Accept: application/json'        // Angabe, dass JSON erwartet wird
         ]);
         curl_setopt($ch, CURLOPT_HEADER, ["Content-Type: application/json"]);
+
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postFields, JSON_THROW_ON_ERROR));
-        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $this->SendDebug('Cloud Response (' . $httpCode . ')', $response, 0);
-        if ($httpCode !== 200) {
-            return '';
-        }
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, self::CURL_TIMEOUT_MS);
 
-        if ($response === false) {
-            return '';
-        }
-
-        $Parts = explode("\r\n\r\n", $response);
-        array_shift($Parts);
-        $result = implode("\r\n\r\n", $Parts);
-        $this->SendDebug('Cloud Body (' . $httpCode . ')', $result, 0);
-        $data = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        return $data['jwtToken'];
+        return $ch;
     }
 
 }

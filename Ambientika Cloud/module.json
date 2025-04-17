@@ -2,7 +2,7 @@
     "id": "{C10C91F4-1843-CBE1-D974-2395A4620106}",
     "name": "Ambientika Cloud",
     "type": 1,
-    "vendor": "Ambientika",
+    "vendor": "Südwind",
     "aliases": [],
     "parentRequirements": [],
     "childRequirements": [
@@ -12,5 +12,5 @@
         "{7E64E639-1446-BFDC-875D-5A4E06C59E26}"
     ],
     "prefix": "AMC",
-    "url": ""
+    "url": "https://github.com/bumaas/Ambientika/blob/master/Ambientika%20Cloud"
 }

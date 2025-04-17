@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use Ambientika\Cloud\ApiUrl;
+use Ambientika\Cloud\ForwardData;
+use Ambientika\Configurator\ConfiguratorFields;
+use Ambientika\Device\Property;
+use Ambientika\Guid;
+
 eval('namespace AmbientikaConfigurator {?>' . file_get_contents(__DIR__ . '/../libs/helper/DebugHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/AmbientikaConsts.php';
 /**
@@ -11,13 +17,13 @@ require_once dirname(__DIR__) . '/libs/AmbientikaConsts.php';
  */
 class AmbientikaConfigurator extends IPSModule
 {
-    use \AmbientikaConfigurator\DebugHelper;
+    //use \AmbientikaConfigurator\DebugHelper;
 
     public function Create(): void
     {
         //Never delete this line!
         parent::Create();
-        $this->RequireParent(\Ambientika\GUID::CloudIO);
+        $this->RequireParent(Guid::CloudIO);
     }
 
 
@@ -30,39 +36,40 @@ class AmbientikaConfigurator extends IPSModule
 
         $DeviceValues   = [];
 
-        $InstanceIDList = $this->GetInstanceList(\Ambientika\GUID::Device, \Ambientika\Device\Property::SerialNumber);
+        $InstanceIDList = $this->GetInstanceList(Guid::Device, Property::SerialNumber);
         $Devices = [];
         if (IPS_GetInstance($this->InstanceID)['ConnectionID'] > 1) { //IO ist angelegt
             $Devices = $this->GetHouseDevices();
 
             // Filter auf gleichen IO
             $InstanceIDList = array_filter($InstanceIDList, function ($InstanceIdDevice) {
-                return IPS_GetInstance($InstanceIdDevice)['ConnectionID'] == IPS_GetInstance($this->InstanceID)['ConnectionID'];
+                return IPS_GetInstance($InstanceIdDevice)['ConnectionID'] === IPS_GetInstance($this->InstanceID)['ConnectionID'];
             },                             ARRAY_FILTER_USE_KEY);
         }
 
         foreach ($Devices as $Device) {
             $AddDevice        = [
-                'houseId'      => $Device['houseId'],
-                'serialNumber' => $Device['serialNumber'],
-                'deviceType'   => $Device['deviceType'],
-                'cloudName'    => $Device['name'],
-                'symconName'   => ''
+                ConfiguratorFields::HouseId      => $Device['houseId'],
+                ConfiguratorFields::SerialNumber => $Device['serialNumber'],
+                ConfiguratorFields::DeviceType   => $Device['deviceType'],
+                ConfiguratorFields::CloudName    => $Device['name'],
+                ConfiguratorFields::SymconName   => ''
             ];
-            $InstanceIdDevice = array_search($Device['serialNumber'], $InstanceIDList);
+            $InstanceIdDevice = array_search($Device['serialNumber'], $InstanceIDList, true);
+            $this->SendDebug('TEST', sprintf('InstanceIdDevice: %s, serial: %s, list: %s',json_encode($InstanceIdDevice), $Device['serialNumber'], json_encode($InstanceIDList)), 0);
             if ($InstanceIdDevice !== false) {
-                $AddDevice['symconName'] = IPS_GetName($InstanceIdDevice);
-                $AddDevice['instanceID'] = $InstanceIdDevice;
+                $AddDevice[ConfiguratorFields::SymconName] = IPS_GetName($InstanceIdDevice);
+                $AddDevice['instanceID'] = $InstanceIdDevice; //der Parametername ist vorgegeben
                 unset($InstanceIDList[$InstanceIdDevice]);
             }
 
             $AddDevice['create'] = [
-                'moduleID'      => \Ambientika\GUID::Device,
+                'moduleID'      => Guid::Device,
                 'location'      => [],
                 'name'          => $Device['name'],
                 'configuration' => [
-                    \Ambientika\Device\Property::HouseId      => $Device['houseId'],
-                    \Ambientika\Device\Property::SerialNumber => $Device['serialNumber']
+                    Property::HouseId      => $Device['houseId'],
+                    Property::SerialNumber => $Device['serialNumber']
                 ]
             ];
             $DeviceValues[]      = $AddDevice;
@@ -70,7 +77,7 @@ class AmbientikaConfigurator extends IPSModule
         foreach ($InstanceIDList as $InstanceIdDevice => $serialNumber) {
             $AddDevice      = [
                 'instanceID'   => $InstanceIdDevice,
-                'houseId'      => IPS_GetProperty($InstanceIdDevice, \Ambientika\Device\Property::HouseId),
+                'houseId'      => IPS_GetProperty($InstanceIdDevice, Property::HouseId),
                 'serialNumber' => '',
                 'deviceType'   => '',
                 'symconName'         => IPS_GetName($InstanceIdDevice)
@@ -79,14 +86,14 @@ class AmbientikaConfigurator extends IPSModule
         }
 
         $Form['actions'][0]['values'] = $DeviceValues;
-        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_encode($Form, JSON_THROW_ON_ERROR), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
-        return json_encode($Form);
+        return json_encode($Form, JSON_THROW_ON_ERROR);
     }
 
     protected function FilterInstances(int $InstanceID): bool
     {
-        return IPS_GetInstance($InstanceID)['ConnectionID'] == $this->ParentID;
+        return IPS_GetInstance($InstanceID)['ConnectionID'] === $this->ParentID;
     }
 
     protected function GetConfigParam(&$item1, int $InstanceID, string $ConfigParam): void
@@ -97,12 +104,12 @@ class AmbientikaConfigurator extends IPSModule
     private function GetHouseDevices(): array
     {
         $houseDevices = [];
-        $this->SendDebug(__FUNCTION__, \Ambientika\Cloud\ApiUrl::GetHouses, 0);
-        $resultHouses = $this->Request(\Ambientika\Cloud\ApiUrl::GetHouses, '');
+        $this->SendDebug(__FUNCTION__, ApiUrl::GetHouses, 0);
+        $resultHouses = $this->Request(ApiUrl::GetHouses, '');
         $this->SendDebug(__FUNCTION__, sprintf('houses: %s', $resultHouses), 0);
         if ($resultHouses) {
             foreach (json_decode($resultHouses, true, 512, JSON_THROW_ON_ERROR) as $house) {
-                $resultHouseDevices = $this->Request(\Ambientika\Cloud\ApiUrl::GetHouseDevices . '?houseId=' . $house['id'], '');
+                $resultHouseDevices = $this->Request(ApiUrl::GetHouseDevices . '?houseId=' . $house['id'], '');
                 $this->SendDebug(__FUNCTION__, sprintf('houseDevicess: %s', $resultHouseDevices), 0);
                 if ($resultHouseDevices) {
                     $devices = json_decode($resultHouseDevices, true, 512, JSON_THROW_ON_ERROR);
@@ -120,7 +127,7 @@ class AmbientikaConfigurator extends IPSModule
 
     private function Request(string $Uri, string $Params): ?string
     {
-        $Result = $this->SendDataToParent(\Ambientika\Cloud\ForwardData::ToJson($Uri, $Params));
+        $Result = $this->SendDataToParent(ForwardData::toJson($Uri, $Params));
         if ($Result === '') {
             return null;
         }
@@ -132,7 +139,7 @@ class AmbientikaConfigurator extends IPSModule
         $InstanceIDList = IPS_GetInstanceListByModuleID($GUID);
         $InstanceIDList = array_flip(array_values($InstanceIDList));
         array_walk($InstanceIDList, [$this, 'GetConfigParam'], $ConfigParam);
-        $this->SendDebug('Filter', $InstanceIDList, 0);
+        $this->SendDebug('Filter', json_encode($InstanceIDList), 0);
         return $InstanceIDList;
     }
 
