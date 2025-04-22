@@ -27,8 +27,6 @@ class AmbientikaDevice extends IPSModule
 
     public function Create(): void
     {
-        IPS_LogMessage(__FUNCTION__, 'started');
-
         //Never delete this line!
         parent::Create();
 
@@ -43,18 +41,15 @@ class AmbientikaDevice extends IPSModule
             0,
             'IPS_RequestAction(' . $this->InstanceID . ',"' . Timer::RefreshState . '",true);'
         );
-        IPS_LogMessage(__FUNCTION__, 'finished');
-
     }
 
 
     public function ApplyChanges(): void
     {
-        IPS_LogMessage(__FUNCTION__, 'started');
         //Never delete this line!
         parent::ApplyChanges();
 
-        // Wenn Kernel nicht fertig, dann nichts machen und darauf warten
+        // Wenn Kernel nicht fertig, nichts machen und darauf warten
         if (IPS_GetKernelRunlevel() !== KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
             return;
@@ -62,7 +57,6 @@ class AmbientikaDevice extends IPSModule
         IPS_RequestAction($this->InstanceID, 'InitConnection', '');
 
         $this->SetStatus(IS_ACTIVE);
-        IPS_LogMessage(__FUNCTION__, 'finished');
         //$this->InitConnection();
     }
 
@@ -75,7 +69,7 @@ class AmbientikaDevice extends IPSModule
 
     public function RequestAction($Ident, $Value): void
     {
-        if (($this->GetStatus() !== IS_ACTIVE) && ($Ident !== 'InitConnection')) {
+        if (($Ident !== 'InitConnection') && ($this->GetStatus() !== IS_ACTIVE)) {
             trigger_error($this->Translate('Instance is not active'), E_USER_NOTICE);
             return;
         }
@@ -131,6 +125,9 @@ class AmbientikaDevice extends IPSModule
 
     private function changeDeviceMode(string $identifier, mixed $value): void
     {
+        if (($identifier === Variables::OperatingMode) && ($value === 'On')) {
+            $value = $this->mapValueIfExists($identifier, $this->GetValue(Variables::LastOperatingMode));
+        }
         $params = json_encode([
                                   'deviceSerialNumber' => $this->ReadPropertyString(Property::SerialNumber),
                                   $identifier          => $value,
@@ -200,24 +197,34 @@ class AmbientikaDevice extends IPSModule
         //Profile anlegen
         $this->RegisterProfileEx(
             VARIABLETYPE_INTEGER,
-            'Ambientika.' . Variables::OperatingMode,
+            'Ambientika.' . ucFirst(Variables::OperatingMode),
             '',
             '',
             '',
             $this->createProfileAssociations(VariableValues::OperatingMode)
         );
+
         $this->RegisterProfileEx(
             VARIABLETYPE_INTEGER,
-            'Ambientika.' . Variables::FanSpeed,
+            'Ambientika.' . ucFirst(Variables::FanSpeed),
             '',
             '',
             '',
             $this->createProfileAssociations(VariableValues::FanSpeed)
         );
 
+        $this->RegisterProfileEx(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::HumidityLevel),
+            '',
+            '',
+            '',
+            $this->createProfileAssociations(VariableValues::HumidityLevel)
+        );
+
         $this->RegisterProfile(
             VARIABLETYPE_INTEGER,
-            'Ambientika.' . Variables::Temperature,
+            'Ambientika.' . ucFirst(Variables::Temperature),
             '',
             '',
             '°C',
@@ -227,26 +234,133 @@ class AmbientikaDevice extends IPSModule
             0
         );
 
-        //STatusvariablen anlegen
+        $this->RegisterProfileEx(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::AirQuality),
+            '',
+            '',
+            '',
+            $this->createProfileAssociations(VariableValues::AirQuality)
+        );
+
+        $this->RegisterProfileEx(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::FiltersStatus),
+            '',
+            '',
+            '',
+            $this->createProfileAssociations(VariableValues::FiltersStatus)
+        );
+
+        $this->RegisterProfileEx(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::DeviceRole),
+            '',
+            '',
+            '',
+            $this->createProfileAssociations(VariableValues::DeviceRole)
+        );
+
+        $this->RegisterProfileEx(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::LightSensorLevel),
+            '',
+            '',
+            '',
+            $this->createProfileAssociations(VariableValues::LightSensorLevel)
+        );
+
+        $this->RegisterProfile(
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucFirst(Variables::SignalStrenght),
+            '',
+            '',
+            '',
+            -15,
+            250,
+            0,
+            0
+        );
+
+
+        //Statusvariablen anlegen
         $pos = 0;
         $this->MaintainVariable(
             Variables::OperatingMode,
-            'Operation Mode',
+            $this->translate('Operation Mode'),
             VARIABLETYPE_INTEGER,
-            'Ambientika.' . Variables::OperatingMode,
+            'Ambientika.' . ucfirst(Variables::OperatingMode),
             $pos++,
             true
         );
         $this->MaintainVariable(
             Variables::FanSpeed,
-            'Fan Speed',
+            $this->translate('Fan Speed'),
             VARIABLETYPE_INTEGER,
-            'Ambientika.' . Variables::FanSpeed,
+            'Ambientika.' . ucfirst(Variables::FanSpeed),
             $pos++,
             true
         );
-        $this->MaintainVariable(Variables::HumidityLevel, 'Humidity Level', VARIABLETYPE_STRING, '', $pos++, true);
-        $this->MaintainVariable(Variables::Temperature, 'Temperature', VARIABLETYPE_STRING, 'Ambientika.' . Variables::Temperature, $pos++, true);
+        $this->MaintainVariable(
+            Variables::Temperature,
+            $this->translate('Temperature'),
+            VARIABLETYPE_STRING,
+            ucfirst('Ambientika.' . Variables::Temperature),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(Variables::HumidityLevel, $this->translate('Humidity Level'), VARIABLETYPE_INTEGER, 'Ambientika.' . ucfirst(Variables::HumidityLevel), $pos++, true);
+        $this->MaintainVariable(Variables::Humidity, $this->translate('Humidity'), VARIABLETYPE_INTEGER, '~Humidity', $pos++, true);
+        $this->MaintainVariable(
+            Variables::AirQuality,
+            $this->translate('Air Quality'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::AirQuality),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(Variables::HumidityAlarm, $this->translate('Humidity Alarm'), VARIABLETYPE_BOOLEAN, '~Switch', $pos++, true);
+        $this->MaintainVariable(
+            Variables::FiltersStatus,
+            $this->translate('Filter Status'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::FiltersStatus),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(
+            Variables::LightSensorLevel,
+            $this->translate('Light Sensor Level'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::LightSensorLevel),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(Variables::NightAlarm, $this->translate('Night Alarm'), VARIABLETYPE_BOOLEAN, '~Switch', $pos++, true);
+        $this->MaintainVariable(
+            Variables::DeviceRole,
+            $this->translate('Device Role'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::DeviceRole),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(
+            Variables::LastOperatingMode,
+            $this->translate('Last Operating Mode'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::OperatingMode),
+            $pos++,
+            true
+        );
+        $this->MaintainVariable(
+            Variables::SignalStrenght,
+            $this->translate('Signal Strength'),
+            VARIABLETYPE_INTEGER,
+            'Ambientika.' . ucfirst(Variables::SignalStrenght),
+            $pos++,
+            true
+        );
 
         $this->EnableAction(Variables::OperatingMode);
         $this->EnableAction(Variables::FanSpeed);
@@ -258,7 +372,7 @@ class AmbientikaDevice extends IPSModule
         $associations = [];
 
         foreach ($variableValues as $key => $value) {
-            $associations[] = [$value, $key, '', -1];
+            $associations[] = [$value, $this->translate($key), '', -1];
         }
         return $associations;
     }
@@ -285,17 +399,21 @@ class AmbientikaDevice extends IPSModule
             return false;
         }
         foreach ($result as $ident => $value) {
+            if (in_array($ident, ['packetType', 'deviceType', 'deviceSerialNumber'])) {
+                continue;
+            }
             if (array_key_exists(ucfirst($ident), (new ReflectionClass(VariableValues::class))->getConstants())) {
-                $arr   = VariableValues::{ucfirst($ident)};
+                $arr = VariableValues::{ucfirst($ident)};
+                assert(isset($arr[$value]), sprintf('Missing key. ident: %s, value: %s', $ident, $value));
+
                 $value = $arr[$value];
             }
-
-            if (array_key_exists(ucfirst($ident), (new ReflectionClass(Variables::class))->getConstants())) {
-                if ($this->GetValue($ident) != $value) { //Achtung: die Typen können sich unterscheiden
-                    $this->SendDebug('changeVariable', sprintf('variable: %s, value: %s', $ident, $value), 0);
-                }
-                $this->SetValue($ident, $value);
+            if ($this->GetValue($ident) != $value) { //Achtung: die Typen können sich unterscheiden
+                $this->SendDebug('changeVariable', sprintf('variable: %s, value: %s', $ident, $value), 0);
             }
+            $this->SendDebug('setValue', sprintf('variable: %s, value: %s', $ident, $value), 0);
+
+            $this->SetValue($ident, $value);
         }
         return true;
     }
@@ -303,7 +421,7 @@ class AmbientikaDevice extends IPSModule
     private function sendCloudRequest(string $url, string $params): ?array
     {
         // Log der Anfrage (inklusive Bedingung, ob Params leer ist)
-        $this->logRequest($url, $params);
+        $this->logRequest(__FUNCTION__, $url, $params);
 
         $response = $this->SendDataToParent(ForwardData::toJson($url, $params));
 
@@ -316,13 +434,11 @@ class AmbientikaDevice extends IPSModule
         return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function logRequest(string $url, string $params): void
+    private function logRequest(string $function, string $url, string $params): void
     {
-        $message = $params !== ''
-            ? sprintf('URL: %s, Params: %s', $url, $params)
-            : sprintf('URL: %s', $url);
+        $message = $params !== '' ? sprintf('URL: %s, Params: %s', $url, $params) : sprintf('URL: %s', $url);
 
-        $this->SendDebug(__FUNCTION__, $message, 0);
+        $this->SendDebug($function, $message, 0);
     }
 
 }

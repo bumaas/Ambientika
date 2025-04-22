@@ -29,28 +29,38 @@ namespace Ambientika\Device {
 
     class Variables
     {
-        public const string OperatingMode = 'operatingMode';
-        public const string FanSpeed      = 'fanSpeed';
-        public const string HumidityLevel = 'humidityLevel';
-        public const string Temperature   = 'temperature';
+        public const string OperatingMode     = 'operatingMode';
+        public const string FanSpeed          = 'fanSpeed';
+        public const string HumidityLevel     = 'humidityLevel';
+        public const string Temperature       = 'temperature';
+        public const string Humidity          = 'humidity';
+        public const string AirQuality        = 'airQuality';
+        public const string HumidityAlarm     = 'humidityAlarm';
+        public const string FiltersStatus     = 'filtersStatus';
+        public const string NightAlarm        = 'nightAlarm';
+        public const string DeviceRole        = 'deviceRole';
+        public const string LastOperatingMode = 'lastOperatingMode';
+        public const string LightSensorLevel  = 'lightSensorLevel';
+        public const string SignalStrenght    = 'signalStrenght';
     }
     class VariableValues
     {
         public const array OperatingMode = [
             'Off'                => 0,
-            'Smart'              => 1,
-            'Auto'               => 2,
+            'On'                 => 1,
+            'Smart'              => 2,
+            'Auto'               => 3,
             //'silent' => 2, //todo
             //'sleep' => 3,  //todo
-            'Night'              => 3,
-            'AwayHome'           => 4,
-            'ManualHeatRecovery' => 5,
-            'Surveillance'       => 6,
-            'TimedExpulsion'     => 7,
-            'Expulsion'          => 8,
-            'Intake'             => 9,
-            'MasterSlaveFlow'    => 10,
-            'SlaveMasterFlow'    => 11
+            'Night'              => 4,
+            'AwayHome'           => 5,
+            'ManualHeatRecovery' => 6,
+            'Surveillance'       => 7,
+            'TimedExpulsion'     => 8,
+            'Expulsion'          => 9,
+            'Intake'             => 10,
+            'MasterSlaveFlow'    => 11,
+            'SlaveMasterFlow'    => 12
         ];
 
         public const array FanSpeed = [
@@ -58,6 +68,33 @@ namespace Ambientika\Device {
             'Low'    => 1,
             'Medium' => 2,
             'High'   => 3,
+        ];
+
+        public const array HumidityLevel = [
+            'Dry'   => 0,
+        ];
+
+        public const array AirQuality = [
+            'VeryGood' => 0,
+            '1'         => 1,
+            '2'         => 2,
+            '3'         => 3,
+        ];
+
+        public const array FiltersStatus = [
+            'Good' => 0,
+        ];
+
+        public const array DeviceRole = [
+            'Master' => 0,
+            'Slave'  => 1,
+        ];
+
+        public const array LastOperatingMode = self::OperatingMode;
+
+        public const array LightSensorLevel = [
+            'a'   => 0,
+            'Low' => 1,
         ];
 
     }
@@ -133,7 +170,7 @@ namespace Ambientika\Cloud {
         {
             $Data = json_decode($JSONString, true, 512, JSON_THROW_ON_ERROR);
 
-            if (!isset($Data[self::Uri]) || !isset($Data[self::Params])) {
+            if (!isset($Data[self::Uri], $Data[self::Params])) {
                 throw new \InvalidArgumentException('Invalid JSON data: Missing required keys.');
             }
 
