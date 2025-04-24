@@ -114,11 +114,6 @@ class AmbientikaCloud extends IPSModule
         $this->RegisterAttributeString(\Ambientika\Cloud\Attribute::ServiceToken, '');
 
         $this->RegisterTimer(
-            Timer::RefreshState,
-            0,
-            'IPS_RequestAction(' . $this->InstanceID . ',"' . Timer::RefreshState . '",true);'
-        );
-        $this->RegisterTimer(
             Timer::Reconnect,
             0,
             'IPS_RequestAction(' . $this->InstanceID . ',"' . Timer::Reconnect . '",true);'
@@ -138,14 +133,13 @@ class AmbientikaCloud extends IPSModule
             return;
         }
 
-        if (($this->ReadPropertyString(\Ambientika\Cloud\Property::Username) !== '') && ($this->ReadPropertyString(\Ambientika\Cloud\Property::Password) !== '' )){
+        if (($this->ReadPropertyString(Property::Username) !== '') && ($this->ReadPropertyString(Property::Password) !== '' )){
             $this->updateServiceToken();
         } else {
             $this->SetStatus(IS_INACTIVE);
         }
 
-        $this->SetTimerInterval(Timer::RefreshState, 0);
-        $this->SetTimerInterval(Timer::Reconnect, 0);
+        $this->SetTimerInterval(Timer::Reconnect, 1000 * 60 * 60 * 24);
 
     }
 
@@ -153,6 +147,13 @@ class AmbientikaCloud extends IPSModule
     {
         if ($Message === IPS_KERNELSTARTED){
                 $this->KernelReady();
+        }
+    }
+
+    public function RequestAction($Ident, $Value): void
+    {
+        if ($Ident === Timer::Reconnect) {
+            $this->updateServiceToken();
         }
     }
 
@@ -169,10 +170,14 @@ class AmbientikaCloud extends IPSModule
         return is_null($result) ? '' : $result;
     }
 
-    private function sendRequest(string $path, string $paramsString): ?string
+    public function sendRequest(string $path, string $paramsString): ?string
     {
         $url = ApiUrl::GetApiUrl($path);
-        $this->SendDebug('Request Url', sprintf('url: %s, params: %s', $url, $paramsString), 0);
+        if ($paramsString !== '') {
+            $this->SendDebug('Request Url', sprintf('url: %s, params: %s', $url, $paramsString), 0);
+        } else {
+            $this->SendDebug('Request Url', sprintf('url: %s', $url), 0);
+        }
 
         $ch = curl_init();
 
@@ -255,7 +260,7 @@ class AmbientikaCloud extends IPSModule
         return $data['jwtToken'];
     }
 
-    private function initializeCurl(string $url, array $postFields)
+    private function initializeCurl(string $url, array $postFields): CurlHandle|false
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);

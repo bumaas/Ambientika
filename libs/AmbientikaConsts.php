@@ -29,6 +29,7 @@ namespace Ambientika\Device {
 
     class Variables
     {
+        public const string PowerSwitch       = 'powerSwitch';
         public const string OperatingMode     = 'operatingMode';
         public const string FanSpeed          = 'fanSpeed';
         public const string HumidityLevel     = 'humidityLevel';
@@ -37,6 +38,7 @@ namespace Ambientika\Device {
         public const string AirQuality        = 'airQuality';
         public const string HumidityAlarm     = 'humidityAlarm';
         public const string FiltersStatus     = 'filtersStatus';
+        public const string FilterReset       = 'filterReset';
         public const string NightAlarm        = 'nightAlarm';
         public const string DeviceRole        = 'deviceRole';
         public const string LastOperatingMode = 'lastOperatingMode';
@@ -46,43 +48,43 @@ namespace Ambientika\Device {
     class VariableValues
     {
         public const array OperatingMode = [
-            'Off'                => 0,
-            'On'                 => 1,
-            'Smart'              => 2,
-            'Auto'               => 3,
-            //'silent' => 2, //todo
-            //'sleep' => 3,  //todo
-            'Night'              => 4,
-            'AwayHome'           => 5,
-            'ManualHeatRecovery' => 6,
-            'Surveillance'       => 7,
-            'TimedExpulsion'     => 8,
-            'Expulsion'          => 9,
-            'Intake'             => 10,
-            'MasterSlaveFlow'    => 11,
-            'SlaveMasterFlow'    => 12
+            'Smart'              => 0,
+            'Auto'               => 1,
+            'ManualHeatRecovery' => 2,
+            'Night'              => 3,
+            'AwayHome'           => 4,
+            'Surveillance'       => 5,
+            'TimedExpulsion'     => 6,
+            'Expulsion'          => 7,
+            'Intake'             => 8,
+            'MasterSlaveFlow'    => 9,
+            'SlaveMasterFlow'    => 10,
+            'Off'                => 11
         ];
 
         public const array FanSpeed = [
-            'Auto'   => 0,
             'Low'    => 1,
             'Medium' => 2,
             'High'   => 3,
         ];
 
         public const array HumidityLevel = [
-            'Dry'   => 0,
+            'Dry'    => 0,
+            'Normal' => 1,
+            'Moist'  => 2
         ];
 
         public const array AirQuality = [
             'VeryGood' => 0,
-            '1'         => 1,
-            '2'         => 2,
-            '3'         => 3,
+            'Good'     => 1,
+            'Medium'   => 3,
+            'Bad'      => 4
         ];
 
         public const array FiltersStatus = [
-            'Good' => 0,
+            'Good'   => 0,
+            'Medium' => 1,
+            'Bad'    => 2,
         ];
 
         public const array DeviceRole = [
@@ -93,16 +95,16 @@ namespace Ambientika\Device {
         public const array LastOperatingMode = self::OperatingMode;
 
         public const array LightSensorLevel = [
-            'a'   => 0,
-            'Low' => 1,
+            'Off'    => 1,
+            'Low'    => 2,
+            'Medium' => 3,
         ];
 
     }
     class InstanceStatus
     {
-        public const int SerialNumberNotFound = IS_EBASE + 1;
-        public const int HouseIdNotFound      = IS_EBASE + 2;
-        public const int InCloudOffline       = IS_EBASE + 7;
+        public const int SerialNumberNotSet = IS_EBASE + 1;
+        public const int RequestFailed      = IS_EBASE + 2;
     }
 }
 
@@ -131,6 +133,7 @@ namespace Ambientika\Cloud {
         public const string Login           = '/Users/authenticate';
         public const string ChangeMode      = '/device/change-mode';
         public const string GetDeviceStatus = '/Device/device-status';
+        public const string ResetFilter     = '/Device/reset-filter';
         public const string GetHouseDevices = '/House/house-devices';
         public const string GetHouses       = '/House/houses';
 

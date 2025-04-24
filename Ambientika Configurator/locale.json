@@ -1,9 +1,8 @@
 {
     "translations": {
         "de": {
-            "House ID": "Haus ID",
-            "Serial Number": "Seriennummer",
             "Model": "Modell",
+            "Serial Number": "Seriennummer",
             "Cloud Name": "Cloud Name",
             "Symcon Name": "Symcon Name"
         }

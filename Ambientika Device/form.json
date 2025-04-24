@@ -2,8 +2,9 @@
   "elements": [
     {
       "name":    "HouseId",
-      "type":    "ValidationTextBox",
-      "caption": "House Id"
+      "type":    "NumberSpinner",
+      "minimum": 0,
+      "caption": "House Id (only informational)"
     },
     {
       "name":    "SerialNumber",
@@ -20,9 +21,9 @@
   ],
   "actions":  [
     {
-      "onClick": "AMD_RequestState($id);",
+      "onClick": "AMBIENTIKA_RequestState($id);",
       "type":    "Button",
-      "caption": "Request state"
+      "caption": "Request State"
     },
     {"type": "TestCenter"}
   ],
@@ -30,17 +31,12 @@
     {
       "code":    201,
       "icon":    "error",
-      "caption": "Serialnumber not found"
+      "caption": "Serialnumber not set"
     },
     {
       "code":    202,
       "icon":    "error",
-      "caption": "House Id not found"
-    },
-    {
-      "code":    207,
-      "icon":    "error",
-      "caption": "Offline todo"
+      "caption": "Request failed"
     }
   ]
 }

@@ -23,7 +23,7 @@ class AmbientikaConfigurator extends IPSModule
     {
         //Never delete this line!
         parent::Create();
-        $this->RequireParent(Guid::CloudIO);
+        $this->ConnectParent(Guid::CloudIO);
     }
 
 
@@ -56,7 +56,10 @@ class AmbientikaConfigurator extends IPSModule
                 ConfiguratorFields::SymconName   => ''
             ];
             $InstanceIdDevice = array_search($Device['serialNumber'], $InstanceIDList, true);
-            $this->SendDebug('TEST', sprintf('InstanceIdDevice: %s, serial: %s, list: %s',json_encode($InstanceIdDevice), $Device['serialNumber'], json_encode($InstanceIDList)), 0);
+            $this->SendDebug('TEST', sprintf('InstanceIdDevice: %s, serial: %s, list: %s',
+                                             json_encode($InstanceIdDevice, JSON_THROW_ON_ERROR), $Device['serialNumber'],
+                                             json_encode($InstanceIDList, JSON_THROW_ON_ERROR)
+            ),               0);
             if ($InstanceIdDevice !== false) {
                 $AddDevice[ConfiguratorFields::SymconName] = IPS_GetName($InstanceIdDevice);
                 $AddDevice['instanceID'] = $InstanceIdDevice; //der Parametername ist vorgegeben
@@ -110,7 +113,7 @@ class AmbientikaConfigurator extends IPSModule
         if ($resultHouses) {
             foreach (json_decode($resultHouses, true, 512, JSON_THROW_ON_ERROR) as $house) {
                 $resultHouseDevices = $this->Request(ApiUrl::GetHouseDevices . '?houseId=' . $house['id'], '');
-                $this->SendDebug(__FUNCTION__, sprintf('houseDevicess: %s', $resultHouseDevices), 0);
+                $this->SendDebug(__FUNCTION__, sprintf('houseDevices: %s', $resultHouseDevices), 0);
                 if ($resultHouseDevices) {
                     $devices = json_decode($resultHouseDevices, true, 512, JSON_THROW_ON_ERROR);
 
@@ -139,7 +142,7 @@ class AmbientikaConfigurator extends IPSModule
         $InstanceIDList = IPS_GetInstanceListByModuleID($GUID);
         $InstanceIDList = array_flip(array_values($InstanceIDList));
         array_walk($InstanceIDList, [$this, 'GetConfigParam'], $ConfigParam);
-        $this->SendDebug('Filter', json_encode($InstanceIDList), 0);
+        $this->SendDebug('Filter', json_encode($InstanceIDList, JSON_THROW_ON_ERROR), 0);
         return $InstanceIDList;
     }
 
