@@ -23,7 +23,7 @@
             "Auto": "automatisch",
             "Low": "niedrig",
             "High": "hoch",
-            "Humidity Level": "Feuchtigkeitsgrad",
+            "Humidity Level": "Feuchtigkeitsgrenze",
             "Dry": "trocken",
             "Normal": "normal",
             "Moist": "feucht",
@@ -43,7 +43,7 @@
             "Master": "Master",
             "Slave": "Slave",
             "Last Operating Mode": "letzter Betriebsmodus",
-            "Light Sensor Level": "Helligkeit",
+            "Light Sensor Level": "Helligkeitsgrenze",
             "Signal Strength": "Signalstärke"
         }
     }
