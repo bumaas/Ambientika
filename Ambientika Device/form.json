@@ -15,7 +15,7 @@
       "name":    "RefreshStateInterval",
       "type":    "NumberSpinner",
       "caption": "Refresh State Interval",
-      "suffix":  "seconds",
+      "suffix":  "Seconds",
       "minimum": 0
     }
   ],

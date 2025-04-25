@@ -374,8 +374,8 @@ class AmbientikaDevice extends IPSModule
         $this->MaintainVariable(
             Variables::Temperature,
             $this->translate('Temperature'),
-            VARIABLETYPE_STRING,
-            ucfirst('Ambientika.' . Variables::Temperature),
+            VARIABLETYPE_INTEGER,
+            ucfirst('Ambientika.' . ucfirst(Variables::Temperature)),
             ++$pos,
             true
         );

@@ -1,6 +1,6 @@
 # Ambientika  <!-- omit in toc -->
 
-Ermöglicht die Einbindung von Ambientika Lüftern der Firma Südwind.
+Das Ambientika-Modul ermöglicht die Integration von Lüftern der Marke Ambientika, entwickelt von der Firma Südwind, in die Symcon-Softwareumgebung.
 
 ## Inhaltsverzeichnis <!-- omit in toc -->
 
@@ -20,7 +20,9 @@ Ermöglicht die Einbindung von Ambientika Lüftern der Firma Südwind.
 ## 1. Vorbemerkungen
 
 ### Zur Library
-Die Kommunikation der Geräte erfolgt über die Ambientika Cloud.  
+Ambientika Lüfter bieten eine cloudbasierte Lösung für die Raumlüftung und können über die Ambientika-App gesteuert werden. Dieses Modul ermöglicht es, alle in der Ambientika Cloud registrierten Lüfter komfortabel in Symcon zu integrieren und zu verwalten.
+
+Die Kommunikation erfolgt dabei vollständig über die Ambientika Cloud.
 
 ----------
 ### Zur Integration von Geräten
@@ -75,6 +77,6 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 ### 2. Changelog
 
 
-Version 1.0 build 5:
+Version 1.0 build 6:
 - Start der offenen Beta  
 
