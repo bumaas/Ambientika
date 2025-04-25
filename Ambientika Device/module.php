@@ -76,7 +76,7 @@ class AmbientikaDevice extends IPSModule
                 if ($Value === true) {
                     $this->changeDeviceMode(Variables::OperatingMode, $this->GetValue(Variables::LastOperatingMode));
                 } else {
-                    $this->changeDeviceMode(Variables::OperatingMode, 'Off');
+                    $this->changeDeviceMode(Variables::OperatingMode, VariableValues::OperatingMode['Off']);
                 }
                 break;
 
@@ -84,8 +84,7 @@ class AmbientikaDevice extends IPSModule
             case Variables::FanSpeed:
             case Variables::HumidityLevel:
             case Variables::LightSensorLevel:
-                $value = $this->mapValueIfExists($Ident, $Value);
-                $this->changeDeviceMode($Ident, $value);
+                $this->changeDeviceMode($Ident, $Value);
                 break;
 
             case Variables::FilterReset:
@@ -182,6 +181,10 @@ class AmbientikaDevice extends IPSModule
 
     private function changeDeviceMode(string $identifier, mixed $value): void
     {
+        $this->SetValue($identifier, $value);
+
+        $value = $this->mapValueIfExists($identifier, $value);
+
         $params = json_encode([
                                   'deviceSerialNumber' => $this->ReadPropertyString(Property::SerialNumber),
                                   $identifier          => $value,

@@ -77,6 +77,6 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 ### 2. Changelog
 
 
-Version 1.0 build 6:
+Version 1.0 build 7:
 - Start der offenen Beta  
 
