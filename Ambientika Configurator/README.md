@@ -1,5 +1,4 @@
-# Ambientika Konfigurator
-Beschreibung des Moduls.
+# Ambientika Konfigurator  <!-- omit in toc -->
 
 ### Inhaltsverzeichnis
 
@@ -8,60 +7,33 @@ Beschreibung des Moduls.
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
+6. [Visualisierung](#6-visualisierung)
 7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 
 ### 1. Funktionsumfang
 
-*
+Instanz zum einfachen Anlegen von Geräte Instanzen in Symcon.
 
 ### 2. Voraussetzungen
 
-- IP-Symcon ab Version 8.0
+- Eingebundene Geräte in der Ambientika App
 
 ### 3. Software-Installation
 
-* Über den Module Store das 'Ambientika Device'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+Dieses Modul ist Bestandteil der [Ambientika Library](../README.md#4-software-installation).
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
- Unter 'Instanz hinzufügen' kann das 'Ambientika Device'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
-
-__Konfigurationsseite__:
-
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
+Unter `Instanz hinzufügen` ist der `Ambientika Konfigurator`-Modul unter dem Hersteller `Südwind` aufgeführt.
 
 ### 5. Statusvariablen und Profile
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
-
-#### Statusvariablen
-
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
-
-#### Profile
-
-Name   | Typ
------- | -------
-       |
-       |
+Dieses Modul erstellt keine Statusvariablen und Profile.
 
 ### 6. Visualisierung
 
-Die Funktionalität, die das Modul in der Visualisierung bietet.
+Dieses Modul ist nicht für eine Visualisierung vorgesehen.
 
 ### 7. PHP-Befehlsreferenz
 
-`boolean AMD_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
-
-Beispiel:
-`AMD_BeispielFunktion(12345);`
+Dieses Modul stellt keine Instanz-Funktionen bereit.

@@ -172,6 +172,13 @@ class AmbientikaCloud extends IPSModule
 
     public function sendRequest(string $path, string $paramsString): ?string
     {
+        //Sicherheitshalber sollten sich keine Anfragen überschneiden
+        $semaphoreName = sprintf('AmbientikaCloud.%s', $this->InstanceID);
+        if (!IPS_SemaphoreEnter($semaphoreName, 3000)) {
+            $this->SendDebug('ERROR Semaphore', 'could not acquire semaphore', 0);
+            return null;
+        }
+
         $url = ApiUrl::GetApiUrl($path);
         if ($paramsString !== '') {
             $this->SendDebug('Request Url', sprintf('url: %s, params: %s', $url, $paramsString), 0);
@@ -198,6 +205,8 @@ class AmbientikaCloud extends IPSModule
         curl_setopt_array($ch, $options);
 
         $response = curl_exec($ch);
+        IPS_SemaphoreLeave($semaphoreName);
+
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_errno($ch);
         curl_close($ch);

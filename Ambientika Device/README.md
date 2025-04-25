@@ -1,67 +1,81 @@
-# Ambientika Device
-Beschreibung des Moduls.
+# Ambientika Device <!-- omit in toc -->
 
-### Inhaltsverzeichnis
+## Inhaltsverzeichnis <!-- omit in toc -->
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+- [1. Funktionsumfang](#1-funktionsumfang)
+- [2. Voraussetzungen](#2-voraussetzungen)
+- [3. Software-Installation](#3-software-installation)
+- [4. Einrichten der Instanzen in Symcon](#4-einrichten-der-instanzen-in-symcon)
+    - [Konfigurationsseite (Parameter)](#konfigurationsseite-parameter)
+    - [Konfigurationsseite (Status und Bedienung)](#konfigurationsseite-status-und-bedienung)
+- [5. Statusvariablen und Profile](#5-statusvariablen-und-profile)
+    - [Statusvariablen](#statusvariablen)
+    - [Profile](#profile)
+- [6. Visualisierung](#6-Visualisierung)
+- [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+    - [Statusaktualisierung](#statusaktualisierung)
+- [8. Aktionen](#8-aktionen)
 
-### 1. Funktionsumfang
+## 1. Funktionsumfang
 
-*
+Instanz für die Integration eines Ambientika Lüfters in Symcon.
 
-### 2. Voraussetzungen
+## 2. Voraussetzungen
 
-- IP-Symcon ab Version 8.0
+- Eingebundene Geräte in der Ambientika App
 
-### 3. Software-Installation
+## 3. Software-Installation
 
-* Über den Module Store das 'Ambientika Device'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+* Dieses Modul ist Bestandteil der [Ambientika-Library](../README.md#4-software-installation).
 
-### 4. Einrichten der Instanzen in IP-Symcon
+## 4. Einrichten der Instanzen in Symcon
 
- Unter 'Instanz hinzufügen' kann das 'Ambientika Device'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
+Unter `Instanz hinzufügen` ist das `Ambientika Device`-Modul unter dem Hersteller `Südwind` aufgeführt.  
 
-__Konfigurationsseite__:
+Es wird empfohlen diese Instanz über die dazugehörige Instanz des [Ambientika Configurator-Moduls](../Ambientika%20Configurator/README.md) anzulegen.
 
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
 
-### 5. Statusvariablen und Profile
+### Konfigurationsseite (Parameter)
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
+| Name                 | Text                     | Beschreibung                             |
+|----------------------|--------------------------|------------------------------------------|
+| HouseId              | Haus ID                  | Kennung des Hauses (nur zur Information) |
+| SerialNumber         | Seriennummer             | Seriennummer des Gerätes                 |
+| RefreshStateInterval | Aktualisierungsintervall | Intervall der Statusaktualisierung       |
 
-#### Statusvariablen
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
+### Konfigurationsseite (Status und Bedienung)
 
-#### Profile
+Über die Schaltfläche `Aktualisiere Status` kann eine manuelle Statusaktualisierung erfolgen.  
 
-Name   | Typ
------- | -------
-       |
-       |
+## 5. Statusvariablen und Profile
 
-### 6. Visualisierung
+### Statusvariablen
 
-Die Funktionalität, die das Modul in der Visualisierung bietet.
+Die Statusvariablen werden beim Anlegen des Gerätes automatisch erzeugt.
 
-### 7. PHP-Befehlsreferenz
+### Profile
 
-`boolean AMD_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
+Die Profile (Ambientika.*) inklusive der Übersetzungen, Maßeinheiten usw. werden automatisch erzeugt.
+Statusvariablen, welche Aktionen abbilden und keine Parameter erwarten, erhalten das Profil `Ambientika.Execute` mit der einzigen Assoziation `Ausführen`.
+
+## 6. Visualisierung
+
+Die direkte Darstellung im WebFront ist möglich; es wird aber empfohlen mit Links zu arbeiten.
+
+## 7. PHP-Befehlsreferenz
+
+### Statusaktualisierung
+
+```php
+boolean AMBIENTIKA_RequestState(integer $InstanzID);
+```
 
 Beispiel:
-`AMD_BeispielFunktion(12345);`
+```php
+AMBIENTIKA_RequestState(12345);
+```
+
+## 8. Aktionen
+
+Es gibt keine speziellen Aktionen für dieses Modul.

@@ -1,67 +1,65 @@
-# Ambientika Cloud
-Beschreibung des Moduls.
+# Ambientika Cloud <!-- omit in toc -->
 
-### Inhaltsverzeichnis
+## Inhaltsverzeichnis <!-- omit in toc -->
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+- [1. Funktionsumfang](#1-funktionsumfang)
+- [2. Voraussetzungen](#2-voraussetzungen)
+- [3. Software-Installation](#3-software-installation)
+- [4. Einrichten der Instanzen in Symcon](#4-einrichten-der-instanzen-in-symcon)
+- [5. Statusvariablen und Profile](#5-statusvariablen-und-profile)
+- [6. Visualisierung](#6-visualisierung)
+- [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+- [8. Aktionen](#8-aktionen)
 
-### 1. Funktionsumfang
 
-*
+## 1. Funktionsumfang
 
-### 2. Voraussetzungen
+Instanz für die Kommunikation mit der Ambientika Cloud.
 
-- IP-Symcon ab Version 8.0
+## 2. Voraussetzungen
 
-### 3. Software-Installation
+- angelegtes Benutzerkonto in der Ambientika App
 
-* Über den Module Store das 'Ambientika Cloud'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+## 3. Software-Installation
 
-### 4. Einrichten der Instanzen in IP-Symcon
+* Dieses Modul ist Bestandteil der [Ambientika Library](../README.md#4-software-installation).
 
- Unter 'Instanz hinzufügen' kann das 'Ambientika Cloud'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
+## 4. Einrichten der Instanzen in Symcon
 
-__Konfigurationsseite__:
+Unter `Instanz hinzufügen` ist das `Ambientika Cloud` -Modul unter dem Hersteller `Südwind` aufgeführt.  
+Diese Instanz wird automatisch erzeugt, wenn eine neue Instanz vom [Ambientika Configurator-Modul](../Ambientika%20Configurator/README.md) angelegt wird.
 
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
+### Konfigurationsseite <!-- omit in toc -->
 
-### 5. Statusvariablen und Profile
+| Name     | Text         | Beschreibung              |
+|----------|--------------|---------------------------|
+| Username | Benutzername | Benutzername des Accounts |
+| Password | Passwort     | Passwort des Accounts     |
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
-#### Statusvariablen
+## 5. Statusvariablen und Profile
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
+Dieses Modul erstellt keine Statusvariablen und Profile.
 
-#### Profile
+## 6. Visualisierung
 
-Name   | Typ
------- | -------
-       |
-       |
+Dieses Modul ist nicht für die Visualisierung geeignet.
 
-### 6. Visualisierung
+## 7. PHP-Befehlsreferenz
 
-Die Funktionalität, die das Modul in der Visualisierung bietet.
+### Anfrage senden
 
-### 7. PHP-Befehlsreferenz
-
-`boolean AMC_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
+```php
+variant AMBIENTIKA_sendRequest(integer $InstanzID, string $path, string $paramsString);
+```
+Dient zum Sender direkter Anfragen. 
 
 Beispiel:
-`AMC_BeispielFunktion(12345);`
+```php
+AMC_sendRequest(36716, '/device/change-mode', '{"deviceSerialNumber":"6055F997BEB8","operatingMode":"Smart"}'));
+```
+Dieses Modul stellt keine Instanz-Funktionen bereit.
+
+## 8. Aktionen
+
+Es gibt keine speziellen Aktionen für dieses Modul.
