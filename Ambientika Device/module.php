@@ -22,7 +22,7 @@ class AmbientikaDevice extends IPSModule
 {
     use \AmbientikaDevice\VariableProfileHelper;
 
-    private const int DEVICE_SLEEP_TIME_MICROSECONDS = 1000000; // 1000ms = 1 s
+    private const int DEVICE_SLEEP_TIME_MICROSECONDS = 2000000; // 100000 µs = 1 s
 
 
     public function Create(): void
