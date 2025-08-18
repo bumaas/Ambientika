@@ -31,6 +31,11 @@
                     "width": "250"
                 },
                 {
+                    "caption": "Role",
+                    "name": "role",
+                    "width": "100"
+                },
+                {
                     "caption": "Symcon Name",
                     "name": "symconName",
                     "width": "auto"

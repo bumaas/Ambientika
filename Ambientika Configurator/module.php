@@ -53,6 +53,7 @@ class AmbientikaConfigurator extends IPSModule
                 ConfiguratorFields::SerialNumber => $Device['serialNumber'],
                 ConfiguratorFields::DeviceType   => $Device['deviceType'],
                 ConfiguratorFields::CloudName    => $Device['name'],
+                ConfiguratorFields::Role    => $Device['role'],
                 ConfiguratorFields::SymconName   => ''
             ];
             $InstanceIdDevice = array_search($Device['serialNumber'], $InstanceIDList, true);

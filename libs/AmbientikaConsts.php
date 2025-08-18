@@ -88,8 +88,8 @@ namespace Ambientika\Device {
         ];
 
         public const array DeviceRole = [
-            'Master' => 0,
-            'Slave'  => 1,
+            'Master'              => 0,
+            'SlaveOppositeMaster' => 1,
         ];
 
         public const array LastOperatingMode = self::OperatingMode;
@@ -190,6 +190,7 @@ namespace Ambientika\Configurator {
         public const string SerialNumber = 'serialNumber';
         public const string DeviceType   = 'deviceType';
         public const string CloudName    = 'cloudName';
+        public const string Role         = 'role';
         public const string SymconName   = 'symconName';
         public const string InstanceId   = 'instanceId';
     }

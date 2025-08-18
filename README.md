@@ -27,9 +27,9 @@ Die Kommunikation erfolgt dabei vollständig über die Ambientika Cloud.
 ----------
 ### Zur Integration von Geräten
 
-Es werden Instanzen zur Kommunikation mit der Cloud (Cloud IO), einrichten von Geräten in Symcon (Konfigurator) und die eigentlichen Geräte Instanzen bereitgestellt.
+Es werden Instanzen zur Kommunikation mit der Cloud (Cloud IO), zum Einrichten von Geräten in Symcon (Konfigurator) und die eigentlichen Geräte Instanzen bereitgestellt.
 
-Für den Betrieb ist zwingend ein Internetzugang sowie die Zugangsdaten des Accounts der Ambientika Cloud nötig.
+Für den Betrieb sind zwingend ein Internetzugang sowie die Zugangsdaten des Accounts der Ambientika Cloud nötig.
 
 
 ## 2. Voraussetzungen
@@ -76,7 +76,9 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.0 build 8:
+- Berücksichtigung der Rolle (Master/Slave) eines Gerätes
 
-Version 1.0 build 7:
+1.0 build 7:
 - Start der offenen Beta  
 
