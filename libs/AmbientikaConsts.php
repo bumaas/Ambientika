@@ -77,7 +77,8 @@ namespace Ambientika\Device {
         public const array AirQuality = [
             'VeryGood' => 0,
             'Good'     => 1,
-            'Medium'   => 3,
+            'Medium'   => 2,
+            'Poor'     => 3,
             'Bad'      => 4
         ];
 

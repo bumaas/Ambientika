@@ -29,6 +29,7 @@
             "Moist": "feucht",
             "VeryGood": "sehr gut",
             "Medium": "mittel",
+            "Poor": "mäßig",
             "Bad": "schlecht",
             "Temperature": "Temperatur",
             "Humidity": "Feuchtigkeit",
