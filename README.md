@@ -76,6 +76,10 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.0 build 9:
+- Slave enthält nur noch nutzbare Variablen
+- AirQuality unterstützte "Poor" noch nicht
+- 
 1.0 build 8:
 - Berücksichtigung der Rolle (Master/Slave) eines Gerätes
 
