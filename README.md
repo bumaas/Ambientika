@@ -79,10 +79,15 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 1.0 build 9:
 - Slave enthält nur noch nutzbare Variablen
 - AirQuality unterstützte "Poor" noch nicht
-- 
+
 1.0 build 8:
 - Berücksichtigung der Rolle (Master/Slave) eines Gerätes
 
 1.0 build 7:
 - Start der offenen Beta  
 
+### Spenden
+
+Die Nutzung des Moduls ist kostenfrei. Niemand sollte sich verpflichtet fühlen, aber wenn das Modul gefällt, dann freue ich mich über eine Spende.
+
+<a href="https://www.paypal.me/bumaas" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
