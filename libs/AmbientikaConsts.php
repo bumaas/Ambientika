@@ -96,9 +96,10 @@ namespace Ambientika\Device {
         public const array LastOperatingMode = self::OperatingMode;
 
         public const array LightSensorLevel = [
-            'Off'    => 1,
-            'Low'    => 2,
-            'Medium' => 3,
+            'NotAvailable' => 0,
+            'Off'          => 1,
+            'Low'          => 2,
+            'Medium'       => 3,
         ];
 
     }
