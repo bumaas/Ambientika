@@ -91,6 +91,7 @@ namespace Ambientika\Device {
         public const array DeviceRole = [
             'Master'              => 0,
             'SlaveOppositeMaster' => 1,
+            'SlaveEqualMaster'    => 2,
         ];
 
         public const array LastOperatingMode = self::OperatingMode;

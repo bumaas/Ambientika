@@ -34,7 +34,6 @@ class AmbientikaDevice extends IPSModule
         $this->RegisterPropertyString(Property::SerialNumber, '');
         $this->RegisterPropertyInteger(Property::RefreshStateInterval, 10);
 
-        $this->ConnectParent(Guid::CloudIO);
         $this->RegisterTimer(
             Timer::RefreshState,
             0,
@@ -99,7 +98,7 @@ class AmbientikaDevice extends IPSModule
     public function RequestState(): bool
     {
         if (!$this->HasActiveParent()) {
-            trigger_error($this->Translate('I/O Instance is not active'), E_USER_NOTICE);
+            $this->SendDebug(__FUNCTION__, 'No active parent', 0);
             return false;
         }
 
@@ -120,12 +119,19 @@ class AmbientikaDevice extends IPSModule
             if (!@$this->GetIDForIdent($ident)) {
                 continue;
             }
-            if (array_key_exists(ucfirst($ident), (new ReflectionClass(VariableValues::class))->getConstants())) {
-                $arr = VariableValues::{ucfirst($ident)};
-                assert(isset($arr[$value]), sprintf('Missing key. ident: %s, value: %s', $ident, $value));
+            $constantName = ucfirst($ident);
+            $constantValue = defined(VariableValues::class . '::' . $constantName)
+                ? constant(VariableValues::class . '::' . $constantName)
+                : null;
 
-                $value = $arr[$value];
+            if (is_array($constantValue)) {
+                if (!isset($constantValue[$value])) {
+                    $this->SendDebug(__FUNCTION__, sprintf('Missing key. ident: %s, value: %s', $ident, $value), 0);
+                    continue;
+                }
+                $value = $constantValue[$value];
             }
+
             /** @noinspection TypeUnsafeComparisonInspection */
             if ($this->GetValue($ident) != $value) { //Note: the types may differ
                 $this->SendDebug('changeVariable', sprintf('variable: %s, value: %s', $ident, $value), 0);
@@ -240,14 +246,15 @@ class AmbientikaDevice extends IPSModule
 
         $this->SetStatus(IS_ACTIVE);
 
-        if (!$this->RequestState()) {
-            return;
-        }
-
         $this->SetTimerInterval(
             Timer::RefreshState,
             $this->ReadPropertyInteger(Property::RefreshStateInterval) * 1000
         );
+
+        if (!$this->RequestState()) {
+            return;
+        }
+
 
         $this->SendDebug(__FUNCTION__, 'Connection established', 0);
         $this->LogMessage($this->Translate('Connection established'), KL_MESSAGE);
