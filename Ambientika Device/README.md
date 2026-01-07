@@ -57,7 +57,7 @@ Die Statusvariablen werden beim Anlegen des Gerätes automatisch erzeugt.
 ### Profile
 
 Die Profile (Ambientika.*) inklusive der Übersetzungen, Maßeinheiten usw. werden automatisch erzeugt.
-Statusvariablen, welche Aktionen abbilden und keine Parameter erwarten, erhalten das Profil `Ambientika.Execute` mit der einzigen Assoziation `Ausführen`.
+Statusvariablen, welche Aktionen abbilden und keine Parameter erwarten, erhalten das Profil `Ambientika.ExecuteAction` mit der einzigen Assoziation `Ausführen`.
 
 ## 6. Visualisierung
 
@@ -70,11 +70,12 @@ Die direkte Darstellung im WebFront ist möglich; es wird aber empfohlen mit Lin
 ```php
 boolean AMBIENTIKA_RequestState(integer $InstanzID);
 ```
+Fragt den aktuellen Status des Gerätes bei der Cloud ab und aktualisiert die Statusvariablen.
 
-Beispiel:
 ```php
-AMBIENTIKA_RequestState(12345);
+void AMBIENTIKA_ResetFilter(integer $InstanzID);
 ```
+Setzt den Filterstatus des Gerätes zurück.
 
 ## 8. Aktionen
 

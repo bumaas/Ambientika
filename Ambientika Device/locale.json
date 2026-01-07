@@ -3,7 +3,7 @@
         "de": {
             "House Id (only informational)": "Haus ID (nur informativ)",
             "Serialnumber": "Seriennummer",
-            "Refreah State Interval": "Zustand lesen",
+            "Refresh State Interval": "Zustand lesen",
             "Seconds": "Sekunden",
             "Request State": "Aktualisiere Status",
             "Operation Mode": "Betriebsmodus",
