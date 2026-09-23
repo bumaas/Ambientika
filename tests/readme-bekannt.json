@@ -1,0 +1,12 @@
+{
+    "hinweis": "Doku-Lücken bei Einführung von tests/check-readme.php. Nur streichen, nie ergänzen - neue Felder und Funktionen gehören in die Doku.",
+    "offen": [
+        "feld:Ambientika Cloud:Password",
+        "feld:Ambientika Cloud:Username",
+        "feld:Ambientika Device:HouseId",
+        "feld:Ambientika Device:RefreshStateInterval",
+        "feld:Ambientika Device:SerialNumber",
+        "funktion:AMBIENTIKA_ResetFilter",
+        "funktion:AMBIENTIKA_sendRequest"
+    ]
+}
