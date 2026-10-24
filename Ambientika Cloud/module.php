@@ -10,7 +10,7 @@ use Ambientika\Cloud\Timer;
 
 require_once dirname(__DIR__) . '/libs/AmbientikaConsts.php';
 
-class AmbientikaCloud extends IPSModule
+class AmbientikaCloud extends IPSModuleStrict
 {
     private const array CurlErrorCodes = [
         0  => 'UNKNOWN ERROR',
@@ -143,14 +143,14 @@ class AmbientikaCloud extends IPSModule
 
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data): void
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
         if ($Message === IPS_KERNELSTARTED){
                 $this->KernelReady();
         }
     }
 
-    public function RequestAction($Ident, $Value): void
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         if ($Ident === Timer::Reconnect) {
             $this->updateServiceToken();
@@ -163,7 +163,7 @@ class AmbientikaCloud extends IPSModule
         $this->updateServiceToken();
     }
 
-    public function ForwardData($JSONString): string
+    public function ForwardData(string $JSONString): string
     {
         ['uri' => $uri, 'params' => $params] = ForwardData::fromJson($JSONString);
         $result = $this->sendRequest($uri, $params);
@@ -229,12 +229,12 @@ class AmbientikaCloud extends IPSModule
     {
         $serviceToken = $this->login();
         $this->WriteAttributeString(\Ambientika\Cloud\Attribute::ServiceToken, $serviceToken);
-        $this->SendDebug(__FUNCTION__, 'ServiceToken: ' . $serviceToken, 0);
         if ($serviceToken === '') {
             $this->SendDebug('ERROR Cloud', 'could not fetch token', 0);
             $this->SetStatus(IS_EBASE + 1);
             return;
         }
+        $this->SendDebug(__FUNCTION__, 'ServiceToken received', 0);
         $this->SetStatus(IS_ACTIVE);
     }
 
@@ -252,9 +252,8 @@ class AmbientikaCloud extends IPSModule
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        $this->SendDebug('Cloud Response (' . $httpCode . ')', $response, 0);
-
         if ($httpCode !== 200 || !$response) {
+            $this->SendDebug('Cloud Response (' . $httpCode . ')', (string) $response, 0);
             return '';
         }
 
@@ -262,9 +261,10 @@ class AmbientikaCloud extends IPSModule
         array_shift($responseParts);
         $responseBody = implode("\r\n\r\n", $responseParts);
 
-        $this->SendDebug('Cloud Body (' . $httpCode . ')', $responseBody, 0);
-
         $data = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+
+        // Der Token gehört nicht ins Debug, das jede KI mit Lesezugriff über den MCP-Server sieht
+        $this->SendDebug('Cloud Body (' . $httpCode . ')', json_encode(array_merge($data, ['jwtToken' => '[hidden]']), JSON_THROW_ON_ERROR), 0);
 
         return $data['jwtToken'];
     }

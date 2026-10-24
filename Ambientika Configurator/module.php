@@ -15,7 +15,7 @@ require_once dirname(__DIR__) . '/libs/AmbientikaConsts.php';
  *
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
  */
-class AmbientikaConfigurator extends IPSModule
+class AmbientikaConfigurator extends IPSModuleStrict
 {
     //use \AmbientikaConfigurator\DebugHelper;
 
@@ -23,7 +23,6 @@ class AmbientikaConfigurator extends IPSModule
     {
         //Never delete this line!
         parent::Create();
-        $this->ConnectParent(Guid::CloudIO);
     }
 
 
@@ -100,7 +99,7 @@ class AmbientikaConfigurator extends IPSModule
         return IPS_GetInstance($InstanceID)['ConnectionID'] === $this->ParentID;
     }
 
-    protected function GetConfigParam(&$item1, int $InstanceID, string $ConfigParam): void
+    protected function GetConfigParam(mixed &$item1, int $InstanceID, string $ConfigParam): void
     {
         $item1 = IPS_GetProperty($InstanceID, $ConfigParam);
     }

@@ -18,7 +18,7 @@ require_once dirname(__DIR__) . '/libs/AmbientikaConsts.php';
  * @method void RegisterProfileEx(int $VarTyp, string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, float $MaxValue = -1, float $StepSize = 0, int $Digits = 0)
  * @method void RegisterProfile(int $VarTyp, string $Name, string $Icon, string $Prefix, string $Suffix, float $MinValue, float $MaxValue, float $StepSize, int $Digits = 0)
  */
-class AmbientikaDevice extends IPSModule
+class AmbientikaDevice extends IPSModuleStrict
 {
     use \AmbientikaDevice\VariableProfileHelper;
 
@@ -56,14 +56,14 @@ class AmbientikaDevice extends IPSModule
         $this->InitConnection();
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data): void
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
         if ($Message === IPS_KERNELSTARTED) {
             $this->KernelReady();
         }
     }
 
-    public function RequestAction($Ident, $Value): void
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         if (($Ident !== 'InitConnection') && ($this->GetStatus() !== IS_ACTIVE)) {
             trigger_error($this->Translate('Instance is not active'), E_USER_NOTICE);
@@ -213,7 +213,7 @@ class AmbientikaDevice extends IPSModule
     }
 
 
-    protected function SetStatus($Status): bool
+    protected function SetStatus(int $Status): bool
     {
         switch ($Status) {
             case IS_ACTIVE:

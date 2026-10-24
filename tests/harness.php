@@ -43,7 +43,7 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
     private int $logOffset = 0;
 
     /** Netz-Naht: Anfragen gehen nicht an die Cloud-Instanz, sondern werden mitgeschrieben. */
-    protected function SendDataToParent($Data): string
+    protected function SendDataToParent(string $Data): string
     {
         ['uri' => $uri, 'params' => $params] = Ambientika\Cloud\ForwardData::fromJson($Data);
         $this->gesendet[] = ['uri' => $uri, 'params' => $params === '' ? [] : json_decode($params, true, 512, JSON_THROW_ON_ERROR)];
@@ -56,23 +56,23 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
         return true;
     }
 
-    protected function SetValue(string $Ident, $Value): bool
+    protected function SetValue(string $Ident, mixed $Value): bool
     {
         $ok = parent::SetValue($Ident, $Value);
         $this->writes[] = [$Ident, $Value];
         return $ok;
     }
 
-    protected function SetStatus($Status): bool
+    protected function SetStatus(int $Status): bool
     {
         $this->status[] = $Status;
         return parent::SetStatus($Status);
     }
 
-    protected function SetTimerInterval(string $Ident, int $Milliseconds): void
+    protected function SetTimerInterval(string $Ident, int $Milliseconds): bool
     {
         $this->timer[$Ident] = $Milliseconds;
-        parent::SetTimerInterval($Ident, $Milliseconds);
+        return parent::SetTimerInterval($Ident, $Milliseconds);
     }
 
     /** InstanceID ist im Stub protected - für Tests von außen lesbar machen. */

@@ -36,7 +36,7 @@ Für den Betrieb sind zwingend ein Internetzugang sowie die Zugangsdaten des Acc
 
 ## 2. Voraussetzungen
 
-- IPS 8.0 oder höher
+- Symcon 8.1 oder höher
 - Eingebundene Geräte in der Ambientika App
 
 ## 3. Enthaltende Module
