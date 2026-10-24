@@ -78,6 +78,10 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.1 build 15:
+- Beim Ändern der Lüfterstufe oder beim Einschalten sprang das Gerät in den Modus „Smart“. Behoben
+- Voraussetzung ist jetzt Symcon 8.1
+
 1.0 build 9:
 - Slave enthält nur noch nutzbare Variablen
 - AirQuality unterstützte "Poor" noch nicht

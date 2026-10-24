@@ -51,6 +51,11 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
         return str_starts_with($uri, Ambientika\Cloud\ApiUrl::GetDeviceStatus) ? $this->statusAntwort : '';
     }
 
+    /** Keine echte Wartezeit nach Schaltbefehlen (im Modul 2 s) */
+    protected function waitForDevice(): void
+    {
+    }
+
     protected function HasActiveParent(): bool
     {
         return true;

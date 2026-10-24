@@ -22,7 +22,16 @@ class AmbientikaDevice extends IPSModuleStrict
 {
     use \AmbientikaDevice\VariableProfileHelper;
 
-    private const int DEVICE_SLEEP_TIME_MICROSECONDS = 2000000; // 100000 µs = 1 s
+    private const int DEVICE_SLEEP_TIME_MICROSECONDS = 2000000; // 1000000 µs = 1 s
+
+    // Die Cloud setzt jedes Feld zurück, das in change-mode fehlt (der Modus springt dann auf Smart),
+    // deshalb gehen diese Einstellungen immer zusammen raus
+    private const array MODE_SETTINGS = [
+        Variables::OperatingMode,
+        Variables::FanSpeed,
+        Variables::HumidityLevel,
+        Variables::LightSensorLevel,
+    ];
 
 
     public function Create(): void
@@ -195,21 +204,27 @@ class AmbientikaDevice extends IPSModuleStrict
     {
         $this->SetValue($identifier, $value);
 
-        $value = $this->mapValueIfExists($identifier, $value);
+        $params = ['deviceSerialNumber' => $this->ReadPropertyString(Property::SerialNumber)];
+        foreach (self::MODE_SETTINGS as $setting) {
+            if (@$this->GetIDForIdent($setting)) {
+                $params[$setting] = $this->mapValueIfExists($setting, $this->GetValue($setting));
+            }
+        }
 
-        $params = json_encode([
-                                  'deviceSerialNumber' => $this->ReadPropertyString(Property::SerialNumber),
-                                  $identifier          => $value,
-                              ], JSON_THROW_ON_ERROR);
-
-        $result = $this->sendCloudRequest(ApiUrl::ChangeMode, $params);
+        $result = $this->sendCloudRequest(ApiUrl::ChangeMode, json_encode($params, JSON_THROW_ON_ERROR));
 
         if ($result !== null) {
             $this->SendDebug(__FUNCTION__, sprintf('Result: %s', json_encode($result, JSON_THROW_ON_ERROR)), 0);
         }
 
-        usleep(self::DEVICE_SLEEP_TIME_MICROSECONDS);
+        $this->waitForDevice();
         $this->RequestState();
+    }
+
+    /** Das Gerät braucht nach einem Befehl einen Moment, bis die Cloud den neuen Stand meldet */
+    protected function waitForDevice(): void
+    {
+        usleep(self::DEVICE_SLEEP_TIME_MICROSECONDS);
     }
 
 
