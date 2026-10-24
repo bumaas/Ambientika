@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Ambientika\Cloud\ApiUrl;
+use Ambientika\Cloud\CloudResponse;
 use Ambientika\Cloud\ForwardData;
 use Ambientika\Device\Property;
 use Ambientika\Device\Timer;
@@ -32,6 +33,9 @@ class AmbientikaDevice extends IPSModuleStrict
         Variables::HumidityLevel,
         Variables::LightSensorLevel,
     ];
+
+    /** HTTP-Code der letzten Antwort aus der Cloud (0 = keine Antwort) */
+    private int $lastHttpCode = 0;
 
 
     public function Create(): void
@@ -117,8 +121,11 @@ class AmbientikaDevice extends IPSModuleStrict
         );
 
         if (is_null($result)) {
-            $this->SendDebug(__FUNCTION__, 'RequestState failed', 0);
-            $this->SetStatus(\Ambientika\Device\InstanceStatus::RequestFailed);
+            $this->SendDebug(__FUNCTION__, sprintf('RequestState failed (HTTP %d)', $this->lastHttpCode), 0);
+            // 404 heißt: die Cloud hat kein Statuspaket vom Gerät, es ist aus oder ohne Verbindung
+            $this->setFailureStatus(
+                $this->lastHttpCode === 404 ? \Ambientika\Device\InstanceStatus::DeviceNotReporting : \Ambientika\Device\InstanceStatus::RequestFailed
+            );
             return false;
         }
 
@@ -156,6 +163,21 @@ class AmbientikaDevice extends IPSModuleStrict
         $this->MaintainVariables();
 
         return true;
+    }
+
+    /** Fehlerstatus setzen, beim Wechsel einmal mit Klartext und nächstem Schritt ins Log */
+    private function setFailureStatus(int $status): void
+    {
+        if ($this->GetStatus() !== $status) {
+            $message = $status === \Ambientika\Device\InstanceStatus::DeviceNotReporting
+                ? sprintf(
+                    $this->Translate('Device %s does not report to the Ambientika cloud. Check power supply and WLAN of the device; the instance recovers by itself.'),
+                    $this->ReadPropertyString(Property::SerialNumber)
+                )
+                : $this->Translate('Request to the Ambientika cloud failed. Check the status and the debug of the cloud instance.');
+            $this->LogMessage($message, KL_WARNING);
+        }
+        $this->SetStatus($status);
     }
 
     public function ResetFilter(): void
@@ -259,8 +281,8 @@ class AmbientikaDevice extends IPSModuleStrict
 
         $this->CreateStateVariables();
 
-        $this->SetStatus(IS_ACTIVE);
-
+        // Den Status setzt RequestState nach der ersten Antwort; vorab aktiv zu setzen meldete sonst bei
+        // jedem Übernehmen eine Rückkehr, auch wenn das Gerät weiter schweigt
         $this->SetTimerInterval(
             Timer::RefreshState,
             $this->ReadPropertyInteger(Property::RefreshStateInterval) * 1000
@@ -516,9 +538,9 @@ class AmbientikaDevice extends IPSModuleStrict
         // Log der Anfrage (inklusive Bedingung, ob Params leer ist)
         $this->logRequest(__FUNCTION__, $url, $params);
 
-        $response = $this->SendDataToParent(ForwardData::toJson($url, $params));
+        ['http' => $this->lastHttpCode, 'body' => $response] = CloudResponse::decode($this->SendDataToParent(ForwardData::toJson($url, $params)));
 
-        if (empty($response)) {
+        if (!CloudResponse::isSuccess($this->lastHttpCode) || $response === '') {
             return null;
         }
 

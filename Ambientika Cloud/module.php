@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Ambientika\Cloud\ApiData;
 use Ambientika\Cloud\ApiUrl;
+use Ambientika\Cloud\CloudResponse;
 use Ambientika\Cloud\ForwardData;
 use Ambientika\Cloud\Property;
 use Ambientika\Cloud\Timer;
@@ -166,17 +167,23 @@ class AmbientikaCloud extends IPSModuleStrict
     public function ForwardData(string $JSONString): string
     {
         ['uri' => $uri, 'params' => $params] = ForwardData::fromJson($JSONString);
-        $result = $this->sendRequest($uri, $params);
-        return is_null($result) ? '' : $result;
+        ['http' => $httpCode, 'body' => $body] = $this->request($uri, $params);
+        return CloudResponse::encode($httpCode, $body ?? '');
     }
 
     public function sendRequest(string $path, string $paramsString): ?string
+    {
+        return $this->request($path, $paramsString)['body'];
+    }
+
+    /** @return array{http: int, body: ?string} body null bei Fehlern, http 0 ohne Antwort */
+    private function request(string $path, string $paramsString): array
     {
         //Sicherheitshalber sollten sich keine Anfragen überschneiden
         $semaphoreName = sprintf('AmbientikaCloud.%s', $this->InstanceID);
         if (!IPS_SemaphoreEnter($semaphoreName, 3000)) {
             $this->SendDebug('ERROR Semaphore', 'could not acquire semaphore', 0);
-            return null;
+            return ['http' => 0, 'body' => null];
         }
 
         $url = ApiUrl::GetApiUrl($path);
@@ -214,15 +221,15 @@ class AmbientikaCloud extends IPSModuleStrict
 
         if ($httpCode === 0) {
             $this->SendDebug('CURL Error', self::CurlErrorCodes[$curlError] ?? 'Unknown CURL Error', 0);
-            return null;
+            return ['http' => 0, 'body' => null];
         }
 
         if (isset(self::HttpError[$httpCode])) {
             $this->SendDebug('HTTP Error', sprintf('Code: %d, Message: %s', $httpCode, self::HttpError[$httpCode]), 0);
-            return null;
+            return ['http' => $httpCode, 'body' => null];
         }
 
-        return $response;
+        return ['http' => $httpCode, 'body' => (string) $response];
     }
 
     private function updateServiceToken(): void

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Ambientika\Cloud\ApiUrl;
+use Ambientika\Cloud\CloudResponse;
 use Ambientika\Cloud\ForwardData;
 use Ambientika\Configurator\ConfiguratorFields;
 use Ambientika\Device\Property;
@@ -130,11 +131,11 @@ class AmbientikaConfigurator extends IPSModuleStrict
 
     private function Request(string $Uri, string $Params): ?string
     {
-        $Result = $this->SendDataToParent(ForwardData::toJson($Uri, $Params));
-        if ($Result === '') {
+        ['http' => $HttpCode, 'body' => $Body] = CloudResponse::decode($this->SendDataToParent(ForwardData::toJson($Uri, $Params)));
+        if (!CloudResponse::isSuccess($HttpCode) || $Body === '') {
             return null;
         }
-        return $Result;
+        return $Body;
     }
 
     private function GetInstanceList(string $GUID, string $ConfigParam): array

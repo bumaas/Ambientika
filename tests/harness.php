@@ -32,8 +32,10 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
 
     /** @var list<array{uri: string, params: array}> jede Anfrage an die Cloud-Instanz, Params dekodiert */
     public array $gesendet = [];
-    /** Antwort der Cloud auf /Device/device-status (roher JSON-String, Mitschnitt aus tests/fixtures) */
+    /** Antwort der Cloud auf /Device/device-status (roher Antworttext, Mitschnitt aus tests/fixtures) */
     public string $statusAntwort = '';
+    /** HTTP-Code dieser Antwort */
+    public int $statusHttp = 200;
     /** @var list<array{0: string, 1: mixed}> jedes SetValue */
     public array $writes = [];
     /** @var list<int> jedes SetStatus */
@@ -48,7 +50,13 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
         ['uri' => $uri, 'params' => $params] = Ambientika\Cloud\ForwardData::fromJson($Data);
         $this->gesendet[] = ['uri' => $uri, 'params' => $params === '' ? [] : json_decode($params, true, 512, JSON_THROW_ON_ERROR)];
 
-        return str_starts_with($uri, Ambientika\Cloud\ApiUrl::GetDeviceStatus) ? $this->statusAntwort : '';
+        [$http, $body] = str_starts_with($uri, Ambientika\Cloud\ApiUrl::GetDeviceStatus) ? [$this->statusHttp, $this->statusAntwort] : [200, ''];
+
+        // So antwortet die Cloud-Instanz: ab 1.1 build 16 mit HTTP-Code, vorher nur der Text und bei Fehlern ''
+        if (class_exists(Ambientika\Cloud\CloudResponse::class)) {
+            return Ambientika\Cloud\CloudResponse::encode($http, $body);
+        }
+        return $http === 200 ? $body : '';
     }
 
     /** Keine echte Wartezeit nach Schaltbefehlen (im Modul 2 s) */

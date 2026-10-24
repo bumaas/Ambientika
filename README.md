@@ -78,6 +78,9 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.1 build 16:
+- Eigener Status 203, wenn sich ein Gerät nicht mehr bei der Cloud meldet (ausgeschaltet oder ohne WLAN), mit Meldung im Log
+
 1.1 build 15:
 - Beim Ändern der Lüfterstufe oder beim Einschalten sprang das Gerät in den Modus „Smart“. Behoben
 - Voraussetzung ist jetzt Symcon 8.1

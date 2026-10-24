@@ -54,7 +54,10 @@
             "Reconnect successfully": "Wieder verbunden",
             "disconnected": "Verbindung getrennt",
             "Connection established": "Verbindung hergestellt",
-            "Power": "Ein/Aus"
+            "Power": "Ein/Aus",
+            "Device does not report to the cloud (switched off or no WLAN)": "Gerät meldet sich nicht bei der Cloud (ausgeschaltet oder ohne WLAN)",
+            "Device %s does not report to the Ambientika cloud. Check power supply and WLAN of the device; the instance recovers by itself.": "Gerät %s meldet sich nicht bei der Ambientika-Cloud. Bitte Stromversorgung und WLAN des Geräts prüfen, die Instanz erholt sich danach von selbst.",
+            "Request to the Ambientika cloud failed. Check the status and the debug of the cloud instance.": "Anfrage an die Ambientika-Cloud fehlgeschlagen. Bitte Status und Debug der Cloud-Instanz prüfen."
         }
     }
 }

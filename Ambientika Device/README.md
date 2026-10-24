@@ -48,6 +48,14 @@ Es wird empfohlen diese Instanz über die dazugehörige Instanz des [Ambientika 
 
 Über die Schaltfläche `Aktualisiere Status` kann eine manuelle Statusaktualisierung erfolgen.  
 
+Die Instanz zeigt einen dieser Fehlerstatus und schreibt beim Wechsel eine Meldung ins Log:
+
+| Status | Bedeutung | Was tun |
+|--------|-----------|---------|
+| 201 Seriennummer nicht gesetzt | Die Instanz weiß nicht, welches Gerät gemeint ist. | Seriennummer eintragen, am einfachsten über den Konfigurator. |
+| 202 Anfrage fehlgeschlagen | Die Cloud war nicht erreichbar oder hat die Anfrage abgelehnt. | Status und Debug der Cloud-Instanz prüfen, oft sind es die Zugangsdaten. |
+| 203 Gerät meldet sich nicht bei der Cloud | Die Cloud kennt das Gerät, hat aber keinen aktuellen Stand von ihm. Meist ist es ausgeschaltet oder hat kein WLAN. | Stromversorgung und WLAN des Geräts prüfen. Die Instanz wird von selbst wieder aktiv, sobald das Gerät sich meldet. |
+
 ## 5. Statusvariablen und Profile
 
 ### Statusvariablen

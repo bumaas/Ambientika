@@ -37,6 +37,11 @@
       "code":    202,
       "icon":    "error",
       "caption": "Request failed"
+    },
+    {
+      "code":    203,
+      "icon":    "error",
+      "caption": "Device does not report to the cloud (switched off or no WLAN)"
     }
   ]
 }

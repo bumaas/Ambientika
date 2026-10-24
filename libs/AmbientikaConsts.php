@@ -108,6 +108,7 @@ namespace Ambientika\Device {
     {
         public const int SerialNumberNotSet = IS_EBASE + 1;
         public const int RequestFailed      = IS_EBASE + 2;
+        public const int DeviceNotReporting = IS_EBASE + 3;
     }
 }
 
@@ -156,6 +157,30 @@ namespace Ambientika\Cloud {
             ];
         }
     }
+    /** Antwort der Cloud-Instanz an Gerät und Konfigurator: HTTP-Code und Antworttext */
+    class CloudResponse
+    {
+        public static function encode(int $HttpCode, string $Body): string
+        {
+            return json_encode(['http' => $HttpCode, 'body' => $Body], JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE);
+        }
+
+        /** @return array{http: int, body: string} http 0, wenn keine Antwort kam */
+        public static function decode(string $Response): array
+        {
+            $data = json_decode($Response, true);
+            if (!is_array($data) || !isset($data['http'], $data['body'])) {
+                return ['http' => 0, 'body' => ''];
+            }
+            return ['http' => (int) $data['http'], 'body' => (string) $data['body']];
+        }
+
+        public static function isSuccess(int $HttpCode): bool
+        {
+            return $HttpCode >= 200 && $HttpCode < 300;
+        }
+    }
+
     class ForwardData
     {
         public const string DataId = 'DataID';
