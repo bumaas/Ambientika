@@ -4,7 +4,9 @@
             "Model": "Modell",
             "Serial Number": "Seriennummer",
             "Cloud Name": "Cloud Name",
-            "Symcon Name": "Symcon Name"
+            "Symcon Name": "Symcon Name",
+            "House Id": "Haus ID",
+            "Role": "Rolle"
         }
     }
 }

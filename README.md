@@ -1,3 +1,5 @@
+[![Checks](https://github.com/bumaas/Ambientika/actions/workflows/check.yml/badge.svg)](https://github.com/bumaas/Ambientika/actions/workflows/check.yml)
+
 # Ambientika  <!-- omit in toc -->
 
 Das Ambientika-Modul ermöglicht die Integration von Lüftern der Marke Ambientika, entwickelt von der Firma Südwind, in die Symcon-Softwareumgebung.

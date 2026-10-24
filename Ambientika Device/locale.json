@@ -45,7 +45,16 @@
             "Slave": "Slave",
             "Last Operating Mode": "letzter Betriebsmodus",
             "Light Sensor Level": "Helligkeitsgrenze",
-            "Signal Strength": "Signalstärke"
+            "Signal Strength": "Signalstärke",
+            "Serialnumber not set": "Seriennummer nicht gesetzt",
+            "Request failed": "Anfrage fehlgeschlagen",
+            "Instance is not active": "Instanz ist nicht aktiv",
+            "Invalid Ident": "Ungültiger Ident",
+            "I/O Instance is not active": "I/O-Instanz ist nicht aktiv",
+            "Reconnect successfully": "Wieder verbunden",
+            "disconnected": "Verbindung getrennt",
+            "Connection established": "Verbindung hergestellt",
+            "Power": "Ein/Aus"
         }
     }
 }
