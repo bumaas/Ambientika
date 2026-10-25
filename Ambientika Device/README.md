@@ -74,7 +74,8 @@ Gerät selbst meldet, dass es sie kann.
 ### Darstellungen
 
 Die Variablen bringen ihre Darstellung selbst mit, mit Übersetzungen und Einheiten. „Filter
-zurücksetzen“ hat die einzige Auswahl `ausführen`.
+zurücksetzen“ hat die einzige Auswahl `ausführen`. Temperatur (-15 bis 50 °C), Luftfeuchte (0 bis
+100 %) und Signalstärke (-15 bis 250) haben feste Bereiche, an denen sich Diagramme ausrichten.
 
 Frühere Versionen haben dafür Profile `Ambientika.*` angelegt. Die Variablen nutzen sie nicht mehr. Wer
 sie nicht selbst an anderer Stelle verwendet, kann sie unter Profile löschen.

@@ -64,6 +64,16 @@ foreach (
     pruefe(beschriftet($darstellungen[$ident]) === array_values($tabelle), "$ident beschriftet jeden Wert → " . json_encode(beschriftet($darstellungen[$ident])));
 }
 
+// Wertebereiche der früheren Profile (Ambientika.Temperature, ~Humidity, Ambientika.SignalStrenght) für
+// Diagramm und Anzeige (Code-Review 25.10.2026, Befund 4)
+foreach (['temperature' => [-15, 50, ' °C'], 'humidity' => [0, 100, ' %'], 'signalStrenght' => [-15, 250, '']] as $ident => [$min, $max, $suffix]) {
+    $d = $darstellungen[$ident];
+    pruefe(
+        ($d['MIN'] ?? null) === $min && ($d['MAX'] ?? null) === $max && ($d['SUFFIX'] ?? '') === $suffix,
+        "$ident: Bereich $min..$max → " . json_encode(['MIN' => $d['MIN'] ?? null, 'MAX' => $d['MAX'] ?? null, 'SUFFIX' => $d['SUFFIX'] ?? null], JSON_UNESCAPED_UNICODE)
+    );
+}
+
 // Bedienbare Variablen behalten ihre Bedienelemente
 foreach (['powerSwitch', 'operatingMode', 'fanSpeed', 'humidityLevel', 'lightSensorLevel', 'filterReset'] as $ident) {
     pruefe(in_array($darstellungen[$ident]['PRESENTATION'] ?? '', $bedienbar, true), "$ident bleibt bedienbar");

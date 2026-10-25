@@ -91,6 +91,15 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
         return parent::SetTimerInterval($Ident, $Milliseconds);
     }
 
+    /** Anzahl der MaintainVariable-Aufrufe */
+    public int $maintainAufrufe = 0;
+
+    protected function MaintainVariable(string $Ident, string $Name, int $Type, string|array $ProfileOrPresentation, int $Position, bool $Keep): bool
+    {
+        $this->maintainAufrufe++;
+        return parent::MaintainVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position, $Keep);
+    }
+
     /** @return array<int, list<int>> angemeldete Nachrichten je Sender */
     public function nachrichten(): array
     {

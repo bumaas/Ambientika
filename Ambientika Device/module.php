@@ -27,6 +27,9 @@ class AmbientikaDevice extends IPSModuleStrict
         Variables::LightSensorLevel,
     ];
 
+    /** Buffer mit den Eingaben, aus denen die Variablen zuletzt gebaut wurden (Rolle, Turbo) */
+    private const string BUFFER_VARIABLE_LAYOUT = 'VariableLayout';
+
     /** HTTP-Code der letzten Antwort aus der Cloud (0 = keine Antwort) */
     private int $lastHttpCode = 0;
 
@@ -212,7 +215,10 @@ class AmbientikaDevice extends IPSModuleStrict
             $this->SetValue(Variables::PowerSwitch, $this->GetValue(Variables::OperatingMode) !== VariableValues::OperatingMode['Off']);
         }
 
-        $this->MaintainVariables();
+        // Neu bauen nur, wenn Rolle oder Turbo sich geändert haben
+        if ($this->GetBuffer(self::BUFFER_VARIABLE_LAYOUT) !== $this->variableLayout()) {
+            $this->MaintainVariables();
+        }
 
         return true;
     }
@@ -361,10 +367,21 @@ class AmbientikaDevice extends IPSModuleStrict
         $this->EnableAction(Variables::FilterReset);
     }
 
+    private function isMaster(): bool
+    {
+        return (!@$this->GetIDForIdent(Variables::DeviceRole)) || $this->GetValue(Variables::DeviceRole) === VariableValues::DeviceRole['Master'];
+    }
+
+    /** Die Eingaben, von denen Variablen und Darstellungen abhängen */
+    private function variableLayout(): string
+    {
+        return json_encode([$this->isMaster(), $this->ReadAttributeBoolean(Attribute::TurboAvailable)], JSON_THROW_ON_ERROR);
+    }
+
     private function MaintainVariables(): void
     {
-        $isMaster =
-            (!@$this->GetIDForIdent(Variables::DeviceRole)) || $this->GetValue(Variables::DeviceRole) === VariableValues::DeviceRole['Master'];
+        $isMaster = $this->isMaster();
+        $this->SetBuffer(self::BUFFER_VARIABLE_LAYOUT, $this->variableLayout());
 
         //Statusvariablen anlegen
         $pos = 0;
@@ -396,7 +413,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::Temperature,
             $this->translate('Temperature'),
             VARIABLETYPE_INTEGER,
-            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'SUFFIX' => ' °C', 'USAGE_TYPE' => 1 /* Temperatur */],
+            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'SUFFIX' => ' °C', 'USAGE_TYPE' => 1 /* Temperatur */, 'MIN' => -15, 'MAX' => 50],
             ++$pos,
             true
         );
@@ -412,7 +429,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::Humidity,
             $this->translate('Humidity'),
             VARIABLETYPE_INTEGER,
-            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'SUFFIX' => ' %'],
+            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'SUFFIX' => ' %', 'MIN' => 0, 'MAX' => 100],
             ++$pos,
             true
         );
@@ -484,7 +501,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::SignalStrenght,
             $this->translate('Signal Strength'),
             VARIABLETYPE_INTEGER,
-            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION],
+            ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'MIN' => -15, 'MAX' => 250],
             ++$pos,
             true
         );
