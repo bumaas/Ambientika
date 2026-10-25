@@ -64,9 +64,12 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
     {
     }
 
+    /** Stand der Cloud-Instanz, wie HasActiveParent ihn meldet */
+    public bool $parentAktiv = true;
+
     protected function HasActiveParent(): bool
     {
-        return true;
+        return $this->parentAktiv;
     }
 
     protected function SetValue(string $Ident, mixed $Value): bool

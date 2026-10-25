@@ -48,6 +48,9 @@ Es wird empfohlen diese Instanz über die dazugehörige Instanz des [Ambientika 
 
 Über die Schaltfläche `Aktualisiere Status` kann eine manuelle Statusaktualisierung erfolgen.  
 
+Ist die Cloud-Instanz nicht aktiv, steht das Gerät auf 104 (inaktiv). Es wird von selbst wieder aktiv,
+sobald die Cloud-Instanz bereit ist und die nächste Statusabfrage durchgeht.
+
 Die Instanz zeigt einen dieser Fehlerstatus und schreibt beim Wechsel eine Meldung ins Log:
 
 | Status | Bedeutung | Was tun |

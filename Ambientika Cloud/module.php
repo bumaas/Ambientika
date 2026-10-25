@@ -217,7 +217,8 @@ class AmbientikaCloud extends IPSModuleStrict
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_errno($ch);
         curl_close($ch);
-        $this->SendDebug('Response (' . $httpCode . ')', $response, 0);
+        // curl_exec liefert ohne Antwort false
+        $this->SendDebug('Response (' . $httpCode . ')', (string) $response, 0);
 
         if ($httpCode === 0) {
             $this->SendDebug('CURL Error', self::CurlErrorCodes[$curlError] ?? 'Unknown CURL Error', 0);

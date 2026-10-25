@@ -78,6 +78,10 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.2 build 17:
+- Ist die Cloud-Instanz nicht aktiv, geht das Gerät auf inaktiv statt einen alten Status stehen zu lassen
+- Antwortet die Cloud gar nicht, bricht die Anfrage nicht mehr mit einem Fehler ab
+
 1.1 build 16:
 - Eigener Status 203, wenn sich ein Gerät nicht mehr bei der Cloud meldet (ausgeschaltet oder ohne WLAN), mit Meldung im Log
 

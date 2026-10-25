@@ -112,6 +112,10 @@ class AmbientikaDevice extends IPSModuleStrict
     {
         if (!$this->HasActiveParent()) {
             $this->SendDebug(__FUNCTION__, 'No active parent', 0);
+            // Ohne bereite Cloud-Instanz bleibt sonst ein alter Status stehen (201, 203)
+            if ($this->GetStatus() !== IS_INACTIVE) {
+                $this->SetStatus(IS_INACTIVE);
+            }
             return false;
         }
 
