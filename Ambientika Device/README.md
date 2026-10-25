@@ -8,9 +8,9 @@
 - [4. Einrichten der Instanzen in Symcon](#4-einrichten-der-instanzen-in-symcon)
     - [Konfigurationsseite (Parameter)](#konfigurationsseite-parameter)
     - [Konfigurationsseite (Status und Bedienung)](#konfigurationsseite-status-und-bedienung)
-- [5. Statusvariablen und Profile](#5-statusvariablen-und-profile)
+- [5. Statusvariablen und Darstellungen](#5-statusvariablen-und-darstellungen)
     - [Statusvariablen](#statusvariablen)
-    - [Profile](#profile)
+    - [Darstellungen](#darstellungen)
 - [6. Visualisierung](#6-Visualisierung)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
     - [Statusaktualisierung](#statusaktualisierung)
@@ -59,16 +59,24 @@ Die Instanz zeigt einen dieser Fehlerstatus und schreibt beim Wechsel eine Meldu
 | 202 Anfrage fehlgeschlagen | Die Cloud war nicht erreichbar oder hat die Anfrage abgelehnt. | Status und Debug der Cloud-Instanz prüfen, oft sind es die Zugangsdaten. |
 | 203 Gerät meldet sich nicht bei der Cloud | Die Cloud kennt das Gerät, hat aber keinen aktuellen Stand von ihm. Meist ist es ausgeschaltet oder hat kein WLAN. | Stromversorgung und WLAN des Geräts prüfen. Die Instanz wird von selbst wieder aktiv, sobald das Gerät sich meldet. |
 
-## 5. Statusvariablen und Profile
+## 5. Statusvariablen und Darstellungen
 
 ### Statusvariablen
 
-Die Statusvariablen werden beim Anlegen des Gerätes automatisch erzeugt.
+Die Statusvariablen werden beim Anlegen des Gerätes automatisch erzeugt. Ein Slave hat keine eigenen
+Bedienvariablen, er folgt seinem Master.
 
-### Profile
+Die Lüftergeschwindigkeit kennt die Stufen niedrig, mittel und hoch. Geräte der neueren Generation
+haben darüber noch Turbo, in der App als Rakete. Die Stufe Turbo bietet die Instanz nur an, wenn das
+Gerät selbst meldet, dass es sie kann.
 
-Die Profile (Ambientika.*) inklusive der Übersetzungen, Maßeinheiten usw. werden automatisch erzeugt.
-Statusvariablen, welche Aktionen abbilden und keine Parameter erwarten, erhalten das Profil `Ambientika.ExecuteAction` mit der einzigen Assoziation `Ausführen`.
+### Darstellungen
+
+Die Variablen bringen ihre Darstellung selbst mit, mit Übersetzungen und Einheiten. „Filter
+zurücksetzen“ hat die einzige Auswahl `ausführen`.
+
+Frühere Versionen haben dafür Profile `Ambientika.*` angelegt. Die Variablen nutzen sie nicht mehr. Wer
+sie nicht selbst an anderer Stelle verwendet, kann sie unter Profile löschen.
 
 ## 6. Visualisierung
 

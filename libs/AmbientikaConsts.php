@@ -27,6 +27,11 @@ namespace Ambientika\Device {
         public const string RefreshState = 'RefreshState';
     }
 
+    class Attribute
+    {
+        public const string TurboAvailable = 'TurboAvailable';
+    }
+
     class Variables
     {
         public const string PowerSwitch       = 'powerSwitch';
@@ -66,6 +71,7 @@ namespace Ambientika\Device {
             'Low'    => 1,
             'Medium' => 2,
             'High'   => 3,
+            'Turbo'  => 4, // nur Geräte mit isTurboAvailable, in der App die Rakete
         ];
 
         public const array HumidityLevel = [

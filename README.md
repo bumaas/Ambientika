@@ -78,6 +78,10 @@ Nach der Installation aus dem Store wird diese Instanz auf Rückfrage automatisc
 
 ### 2. Changelog
 
+1.2 build 18:
+- Lüftergeschwindigkeit Turbo (Rakete) bei Geräten der neueren Generation
+- Die Variablen tragen Darstellungen statt der Profile `Ambientika.*`
+
 1.2 build 17:
 - Ist die Cloud-Instanz nicht aktiv, geht das Gerät auf inaktiv statt einen alten Status stehen zu lassen
 - Antwortet die Cloud gar nicht, bricht die Anfrage nicht mehr mit einem Fehler ab
