@@ -50,6 +50,7 @@
             "Request failed": "Anfrage fehlgeschlagen",
             "Instance is not active": "Instanz ist nicht aktiv",
             "Invalid Ident": "Ungültiger Ident",
+            "Invalid value": "Ungültiger Wert",
             "I/O Instance is not active": "I/O-Instanz ist nicht aktiv",
             "Reconnect successfully": "Wieder verbunden",
             "disconnected": "Verbindung getrennt",

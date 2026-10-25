@@ -56,6 +56,11 @@ class AmbientikaDevice extends IPSModuleStrict
         //Never delete this line!
         parent::ApplyChanges();
 
+        // Statuswechsel der Cloud-Instanz sofort übernehmen, nicht erst mit der nächsten Abfrage
+        $this->RegisterMessage($this->InstanceID, FM_CONNECT);
+        $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
+        $this->registerParent();
+
         // Wenn Kernel nicht fertig, nichts machen und darauf warten
         if (IPS_GetKernelRunlevel() !== KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
@@ -67,9 +72,46 @@ class AmbientikaDevice extends IPSModuleStrict
 
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
-        if ($Message === IPS_KERNELSTARTED) {
-            $this->KernelReady();
+        switch ($Message) {
+            case IPS_KERNELSTARTED:
+                $this->KernelReady();
+                break;
+
+            case FM_CONNECT:
+            case FM_DISCONNECT:
+                $this->registerParent();
+                $this->followParent();
+                break;
+
+            case IM_CHANGESTATUS:
+                if ($SenderID === IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+                    $this->followParent();
+                }
+                break;
         }
+    }
+
+    /** Für Statuswechsel genau der aktuellen Cloud-Instanz anmelden */
+    private function registerParent(): void
+    {
+        $parentId = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        foreach ($this->GetMessageList() as $senderId => $messages) {
+            if ($senderId !== $parentId && in_array(IM_CHANGESTATUS, $messages, true)) {
+                $this->UnregisterMessage($senderId, IM_CHANGESTATUS);
+            }
+        }
+        if ($parentId > 0) {
+            $this->RegisterMessage($parentId, IM_CHANGESTATUS);
+        }
+    }
+
+    /** Den eigenen Status an die Cloud-Instanz anpassen; RequestState prüft deren Bereitschaft selbst */
+    private function followParent(): void
+    {
+        if ((IPS_GetKernelRunlevel() !== KR_READY) || ($this->ReadPropertyString(Property::SerialNumber) === '')) {
+            return;
+        }
+        $this->RequestState();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
@@ -92,6 +134,11 @@ class AmbientikaDevice extends IPSModuleStrict
             case Variables::FanSpeed:
             case Variables::HumidityLevel:
             case Variables::LightSensorLevel:
+                // Nur Werte, die die Darstellung anbietet; Turbo also nur bei Geräten, die ihn melden
+                if (!in_array($Value, $this->valueTable($Ident), true)) {
+                    trigger_error($this->Translate('Invalid value') . ': ' . $Ident . ' = ' . var_export($Value, true), E_USER_NOTICE);
+                    return;
+                }
                 $this->changeDeviceMode($Ident, $Value);
                 break;
 
@@ -319,11 +366,6 @@ class AmbientikaDevice extends IPSModuleStrict
         $isMaster =
             (!@$this->GetIDForIdent(Variables::DeviceRole)) || $this->GetValue(Variables::DeviceRole) === VariableValues::DeviceRole['Master'];
 
-        $fanSpeeds = VariableValues::FanSpeed;
-        if (!$this->ReadAttributeBoolean(Attribute::TurboAvailable)) {
-            unset($fanSpeeds['Turbo']);
-        }
-
         //Statusvariablen anlegen
         $pos = 0;
         $this->MaintainVariable(
@@ -346,7 +388,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::FanSpeed,
             $this->translate('Fan Speed'),
             VARIABLETYPE_INTEGER,
-            $this->enumeration($fanSpeeds),
+            $this->enumeration($this->valueTable(Variables::FanSpeed)),
             ++$pos,
             $isMaster
         );
@@ -378,7 +420,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::AirQuality,
             $this->translate('Air Quality'),
             VARIABLETYPE_INTEGER,
-            $this->enumeration(VariableValues::AirQuality),
+            $this->labeledValues(VariableValues::AirQuality),
             ++$pos,
             true
         );
@@ -386,7 +428,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::HumidityAlarm,
             $this->translate('Humidity Alarm'),
             VARIABLETYPE_BOOLEAN,
-            ['PRESENTATION' => VARIABLE_PRESENTATION_SWITCH],
+            $this->labeledBoolean(),
             ++$pos,
             true
         );
@@ -394,7 +436,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::FiltersStatus,
             $this->translate('Filter Status'),
             VARIABLETYPE_INTEGER,
-            $this->enumeration(VariableValues::FiltersStatus),
+            $this->labeledValues(VariableValues::FiltersStatus),
             ++$pos,
             true
         );
@@ -418,7 +460,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::NightAlarm,
             $this->translate('Night Alarm'),
             VARIABLETYPE_BOOLEAN,
-            ['PRESENTATION' => VARIABLE_PRESENTATION_SWITCH],
+            $this->labeledBoolean(),
             ++$pos,
             true
         );
@@ -426,7 +468,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::DeviceRole,
             $this->translate('Device Role'),
             VARIABLETYPE_INTEGER,
-            $this->enumeration(VariableValues::DeviceRole),
+            $this->labeledValues(VariableValues::DeviceRole),
             ++$pos,
             true
         );
@@ -434,7 +476,7 @@ class AmbientikaDevice extends IPSModuleStrict
             Variables::LastOperatingMode,
             $this->translate('Last Operating Mode'),
             VARIABLETYPE_INTEGER,
-            $this->enumeration(VariableValues::OperatingMode),
+            $this->labeledValues(VariableValues::OperatingMode),
             ++$pos,
             $isMaster
         );
@@ -456,6 +498,70 @@ class AmbientikaDevice extends IPSModuleStrict
             $options[] = ['Value' => $value, 'Caption' => $this->translate($key), 'IconActive' => false, 'IconValue' => '', 'Color' => -1];
         }
         return ['PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION, 'OPTIONS' => json_encode($options, JSON_THROW_ON_ERROR)];
+    }
+
+    // Schalter und Aufzählung verlangen eine Variable mit Aktion (IPS_GetPresentation: requestAction = true),
+    // reine Statuswerte bekommen deshalb die Wertanzeige mit Beschriftungen
+
+    /** Wertanzeige für einen Zahlenstatus, jeder Wert als Intervall mit fester Beschriftung */
+    private function labeledValues(array $variableValues): array
+    {
+        $intervals = [];
+        foreach ($variableValues as $key => $value) {
+            $intervals[] = [
+                'IntervalMinValue'   => $value,
+                'IntervalMaxValue'   => $value,
+                'ConstantActive'     => true,
+                'ConstantValue'      => $this->translate($key),
+                'ConversionFactor'   => 1,
+                'PrefixActive'       => false,
+                'PrefixValue'        => '',
+                'SuffixActive'       => false,
+                'SuffixValue'        => '',
+                'DigitsActive'       => false,
+                'DigitsValue'        => 0,
+                'IconActive'         => false,
+                'IconValue'          => '',
+                'ColorActive'        => false,
+                'ColorValue'         => -1,
+                'ContentColorActive' => false,
+                'ContentColorValue'  => -1,
+            ];
+        }
+        return [
+            'PRESENTATION'     => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'INTERVALS_ACTIVE' => true,
+            'INTERVALS'        => json_encode($intervals, JSON_THROW_ON_ERROR),
+        ];
+    }
+
+    /** Wertanzeige für einen Schaltstatus (Alarm aus/ein) */
+    private function labeledBoolean(): array
+    {
+        $options = [];
+        foreach (['Off' => false, 'On' => true] as $key => $value) {
+            $options[] = [
+                'Value'              => $value,
+                'Caption'            => $this->translate($key),
+                'IconActive'         => false,
+                'IconValue'          => '',
+                'ColorActive'        => false,
+                'ColorValue'         => -1,
+                'ContentColorActive' => false,
+                'ContentColorValue'  => -1,
+            ];
+        }
+        return ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION, 'OPTIONS' => json_encode($options, JSON_THROW_ON_ERROR)];
+    }
+
+    /** Wertetabelle einer Variable (Cloud-Wert => Variablenwert); Turbo nur bei Geräten, die ihn melden */
+    private function valueTable(string $ident): array
+    {
+        $table = $this->getConstantsArray(ucfirst($ident)) ?? [];
+        if ($ident === Variables::FanSpeed && !$this->ReadAttributeBoolean(Attribute::TurboAvailable)) {
+            unset($table['Turbo']);
+        }
+        return $table;
     }
 
     private function KernelReady(): void

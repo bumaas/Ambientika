@@ -48,15 +48,16 @@ Es wird empfohlen diese Instanz über die dazugehörige Instanz des [Ambientika 
 
 Über die Schaltfläche `Aktualisiere Status` kann eine manuelle Statusaktualisierung erfolgen.  
 
-Ist die Cloud-Instanz nicht aktiv, steht das Gerät auf 104 (inaktiv). Es wird von selbst wieder aktiv,
-sobald die Cloud-Instanz bereit ist und die nächste Statusabfrage durchgeht.
+Ist die Cloud-Instanz nicht aktiv, steht das Gerät auf 104 (inaktiv). Steht die Cloud-Instanz auf 201,
+hat die Anmeldung nicht geklappt, meist stimmen dann die Zugangsdaten nicht. Sobald die Cloud-Instanz
+wieder aktiv ist, fragt das Gerät seinen Status sofort ab und wird ebenfalls aktiv.
 
 Die Instanz zeigt einen dieser Fehlerstatus und schreibt beim Wechsel eine Meldung ins Log:
 
 | Status | Bedeutung | Was tun |
 |--------|-----------|---------|
 | 201 Seriennummer nicht gesetzt | Die Instanz weiß nicht, welches Gerät gemeint ist. | Seriennummer eintragen, am einfachsten über den Konfigurator. |
-| 202 Anfrage fehlgeschlagen | Die Cloud war nicht erreichbar oder hat die Anfrage abgelehnt. | Status und Debug der Cloud-Instanz prüfen, oft sind es die Zugangsdaten. |
+| 202 Anfrage fehlgeschlagen | Die Cloud war nicht erreichbar oder hat die Anfrage abgelehnt. | Debug der Cloud-Instanz prüfen. |
 | 203 Gerät meldet sich nicht bei der Cloud | Die Cloud kennt das Gerät, hat aber keinen aktuellen Stand von ihm. Meist ist es ausgeschaltet oder hat kein WLAN. | Stromversorgung und WLAN des Geräts prüfen. Die Instanz wird von selbst wieder aktiv, sobald das Gerät sich meldet. |
 
 ## 5. Statusvariablen und Darstellungen

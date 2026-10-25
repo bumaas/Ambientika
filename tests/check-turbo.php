@@ -55,6 +55,18 @@ pruefe(letzteStufe($neu) === 'Turbo', 'Turbo geht als Turbo raus → ' . var_exp
 $alt = geraetMitStatus('smart-low-master');
 pruefe(optionswerte($alt, 'fanSpeed') === [1, 2, 3], 'altes Gerät bietet Turbo nicht an → ' . json_encode(optionswerte($alt, 'fanSpeed')));
 
+// Turbo nur für Geräte, die ihn melden, auch per Skript oder MCP (Code-Review 25.10.2026, Befund 2)
+$stufeVorher = $alt->werte()['fanSpeed'];
+$alt->gesendet = [];
+$alt->RequestAction('fanSpeed', 4);
+pruefe($alt->gesendet === [], 'altes Gerät: Turbo wird nicht an die Cloud gesendet → ' . json_encode($alt->gesendet));
+pruefe($alt->werte()['fanSpeed'] === $stufeVorher, 'altes Gerät: Lüfterstufe bleibt stehen → ' . var_export($alt->werte()['fanSpeed'], true));
+$neu->gesendet = [];
+$neu->RequestAction('fanSpeed', 9);
+pruefe($neu->gesendet === [], 'unbekannte Stufe wird nicht gesendet → ' . json_encode($neu->gesendet));
+$alt->RequestAction('operatingMode', 99);
+pruefe($alt->gesendet === [], 'unbekannter Modus wird nicht gesendet → ' . json_encode($alt->gesendet));
+
 // Darstellungen statt globaler Profile
 $legacy = [];
 foreach (IPS_GetChildrenIDs($neu->instanzId()) as $vid) {

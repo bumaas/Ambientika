@@ -91,6 +91,12 @@ final class AmbientikaDeviceHarness extends AmbientikaDevice
         return parent::SetTimerInterval($Ident, $Milliseconds);
     }
 
+    /** @return array<int, list<int>> angemeldete Nachrichten je Sender */
+    public function nachrichten(): array
+    {
+        return $this->GetMessageList();
+    }
+
     /** InstanceID ist im Stub protected - für Tests von außen lesbar machen. */
     public function instanzId(): int
     {
